@@ -2,18 +2,34 @@ import Phaser from "phaser";
 import { BootScene } from "./scenes/BootScene";
 import { CareerCityScene } from "./scenes/CareerCityScene";
 import { HUDScene } from "./scenes/HUDScene";
-import { GAME_HEIGHT, GAME_WIDTH, SCENE_KEYS } from "./utils/Constants";
+import {
+  CoverLetterScene,
+  InterviewCoachScene,
+  JobAnalyzerScene,
+  ResumeTailorScene,
+  StudyHallScene,
+} from "./scenes/InteriorScenes";
+import { SCENE_KEYS } from "./utils/Constants";
 
 export function createPhaserConfig(
   parent: string,
 ): Phaser.Types.Core.GameConfig {
   return {
     type: Phaser.AUTO,
-    width: GAME_WIDTH,
-    height: GAME_HEIGHT,
+    width: window.innerWidth,
+    height: window.innerHeight,
     parent,
     backgroundColor: "#000000",
-    scene: [BootScene, CareerCityScene, HUDScene],
+    scene: [
+      BootScene,
+      CareerCityScene,
+      HUDScene,
+      ResumeTailorScene,
+      CoverLetterScene,
+      InterviewCoachScene,
+      JobAnalyzerScene,
+      StudyHallScene,
+    ],
     physics: {
       default: "arcade",
       arcade: {
@@ -22,8 +38,11 @@ export function createPhaserConfig(
       },
     },
     scale: {
-      mode: Phaser.Scale.FIT,
-      autoCenter: Phaser.Scale.CENTER_BOTH,
+      mode: Phaser.Scale.RESIZE,
+      autoCenter: Phaser.Scale.NO_CENTER,
+      width: window.innerWidth,
+      height: window.innerHeight,
+      parent,
     },
     render: {
       pixelArt: true,
@@ -34,7 +53,7 @@ export function createPhaserConfig(
       gamepad: false,
     },
     audio: {
-      disableWebAudio: true,
+      disableWebAudio: false,
     },
   };
 }

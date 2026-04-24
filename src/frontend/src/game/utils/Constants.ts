@@ -172,6 +172,11 @@ export const SCENE_KEYS = {
   BOOT: "BootScene",
   CAREER_CITY: "CareerCityScene",
   HUD: "HUDScene",
+  RESUME_TAILOR: "ResumeTailorScene",
+  COVER_LETTER: "CoverLetterScene",
+  INTERVIEW_COACH: "InterviewCoachScene",
+  JOB_ANALYZER: "JobAnalyzerScene",
+  STUDY_HALL: "StudyHallScene",
 };
 
 export const ASSET_KEYS = {
@@ -196,4 +201,42 @@ export const GAME_EVENTS = {
   PLAYER_MOVE: "player:move",
   FAST_TRAVEL: "fasttravel:request",
   MINIMAP_TOGGLE: "minimap:toggle",
+  INTERIOR_EXIT: "interior:exit",
 };
+
+// Music track definitions — URLs are kept for API compatibility but music is
+// now synthesized via Web Audio API in MusicManager (no external CDN needed)
+export const MUSIC_TRACKS = {
+  CAREER_CITY: {
+    key: "music_career_city",
+    url: "",
+    name: "Town Theme",
+  },
+  RESUME_TAILOR: {
+    key: "music_resume_tailor",
+    url: "",
+    name: "Castle on the Mountain",
+  },
+  COVER_LETTER: {
+    key: "music_cover_letter",
+    url: "",
+    name: "Rainy Streets",
+  },
+  INTERVIEW_COACH: {
+    key: "music_interview_coach",
+    url: "",
+    name: "In the Royal Court",
+  },
+  JOB_ANALYZER: {
+    key: "music_job_analyzer",
+    url: "",
+    name: "Dungeon",
+  },
+  STUDY_HALL: {
+    key: "music_study_hall",
+    url: "",
+    name: "Shrine of Mysteries",
+  },
+} as const;
+
+export type MusicTrackKey = keyof typeof MUSIC_TRACKS;

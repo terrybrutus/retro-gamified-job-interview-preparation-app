@@ -7,6 +7,7 @@ import {
 } from "../utils/Constants";
 import type { NPCConfig } from "../utils/Constants";
 
+const FONT = "Orbitron, sans-serif";
 const XP_PER_LEVEL_BASE = 100;
 
 function xpForNextLevel(level: number): number {
@@ -44,7 +45,6 @@ export class HUDScene extends Phaser.Scene {
   buildHUDBottom(width: number, height: number): void {
     const hudH = 58;
 
-    // HUD background with subtle gradient feel
     const hudBg = this.add.rectangle(
       width / 2,
       height - hudH / 2,
@@ -56,7 +56,6 @@ export class HUDScene extends Phaser.Scene {
     hudBg.setStrokeStyle(3, COLORS.NEON_GREEN, 1);
     hudBg.setDepth(90);
 
-    // Inner line accent
     const accent = this.add.rectangle(
       width / 2,
       height - hudH,
@@ -67,43 +66,41 @@ export class HUDScene extends Phaser.Scene {
     );
     accent.setDepth(90);
 
-    // Level badge
     const levelBadge = this.add.rectangle(
       70,
       height - hudH / 2,
-      100,
-      36,
+      110,
+      38,
       0x0a1a0a,
       1,
     );
     levelBadge.setStrokeStyle(2, COLORS.NEON_GREEN, 0.8);
     levelBadge.setDepth(91);
 
-    this.levelText = this.add.text(70, height - hudH / 2 - 7, "LEVEL 0", {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: "9px",
+    this.levelText = this.add.text(70, height - hudH / 2 - 8, "LEVEL 0", {
+      fontFamily: FONT,
+      fontSize: "11px",
       color: "#39ff14",
+      fontStyle: "bold",
     });
     this.levelText.setOrigin(0.5, 0.5).setDepth(92);
 
-    this.xpText = this.add.text(70, height - hudH / 2 + 9, "XP: 0", {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: "7px",
+    this.xpText = this.add.text(70, height - hudH / 2 + 10, "XP: 0", {
+      fontFamily: FONT,
+      fontSize: "9px",
       color: "#00ffff",
     });
     this.xpText.setOrigin(0.5, 0.5).setDepth(92);
 
-    // XP bar
-    const barPad = 130;
+    const barPad = 140;
     this.barX = barPad;
     this.barW = width - barPad - 200;
     const barY = height - hudH / 2;
 
-    // XP label
     this.add
       .text(barPad, barY - 14, "XP", {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: "6px",
+        fontFamily: FONT,
+        fontSize: "8px",
         color: "#39ff1466",
       })
       .setDepth(91);
@@ -140,11 +137,10 @@ export class HUDScene extends Phaser.Scene {
     this.barGlow.setOrigin(0, 0.5).setDepth(91);
     this.barGlow.setBlendMode(Phaser.BlendModes.ADD);
 
-    // "CAREER" label
     this.add
       .text(width / 2, height - hudH + 8, "◆ CAREER CITY ◆", {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: "5px",
+        fontFamily: FONT,
+        fontSize: "7px",
         color: "#39ff1433",
         align: "center",
       })
@@ -153,20 +149,21 @@ export class HUDScene extends Phaser.Scene {
   }
 
   buildMinimapButton(width: number): void {
-    const bg = this.add.rectangle(0, 0, 114, 32, 0x001a1a, 0.95);
+    const bg = this.add.rectangle(0, 0, 114, 34, 0x001a1a, 0.95);
     bg.setStrokeStyle(2, COLORS.NEON_CYAN, 1);
 
     const label = this.add.text(0, 0, "[ MAP ]", {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: "8px",
+      fontFamily: FONT,
+      fontSize: "10px",
       color: "#00ffff",
+      fontStyle: "bold",
     });
     label.setOrigin(0.5, 0.5);
 
     this.minimapBtn = this.add.container(width - 80, 24, [bg, label]);
     this.minimapBtn.setDepth(91);
     this.minimapBtn.setInteractive(
-      new Phaser.Geom.Rectangle(-57, -16, 114, 32),
+      new Phaser.Geom.Rectangle(-57, -17, 114, 34),
       Phaser.Geom.Rectangle.Contains,
     );
     this.minimapBtn.on("pointerover", () => {
@@ -183,25 +180,27 @@ export class HUDScene extends Phaser.Scene {
   }
 
   private buildNPCNameDisplay(width: number): void {
-    this.npcNameText = this.add.text(width / 2, 30, "", {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: "8px",
+    this.npcNameText = this.add.text(width / 2, 32, "", {
+      fontFamily: FONT,
+      fontSize: "12px",
       color: "#ffbf00",
       backgroundColor: "#000000ee",
       padding: { x: 10, y: 5 },
       stroke: "#000000",
       strokeThickness: 2,
+      fontStyle: "bold",
     });
     this.npcNameText.setOrigin(0.5, 0.5).setDepth(91).setVisible(false);
   }
 
   buildXPFlash(width: number, height: number): void {
     this.xpFlash = this.add.text(width / 2, height - 80, "", {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: "11px",
+      fontFamily: FONT,
+      fontSize: "14px",
       color: "#39ff14",
       stroke: "#000000",
       strokeThickness: 4,
+      fontStyle: "bold",
     });
     this.xpFlash.setOrigin(0.5, 0.5).setDepth(95).setAlpha(0);
   }

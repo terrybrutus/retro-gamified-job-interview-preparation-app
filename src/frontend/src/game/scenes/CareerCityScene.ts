@@ -1,15 +1,19 @@
 import Phaser from "phaser";
 import { NPC } from "../entities/NPC";
 import { Player } from "../entities/Player";
+import { musicManager } from "../managers/MusicManager";
 import {
   COLORS,
   GAME_EVENTS,
   MAP_HEIGHT,
   MAP_WIDTH,
+  MUSIC_TRACKS,
   type NPCKey,
   NPC_CONFIGS,
   SCENE_KEYS,
 } from "../utils/Constants";
+
+const FONT = "Orbitron, sans-serif";
 
 interface PropPlacement {
   type:
@@ -38,6 +42,15 @@ const PROP_REGIONS: Record<string, [number, number, number, number]> = {
   bush: [30, 72, 20, 16],
   flowers: [58, 76, 16, 12],
   fountain: [82, 70, 48, 48],
+};
+
+// Map NPC key to interior scene key
+const NPC_SCENE_MAP: Partial<Record<NPCKey, string>> = {
+  "resume-tailor": SCENE_KEYS.RESUME_TAILOR,
+  "cover-letter": SCENE_KEYS.COVER_LETTER,
+  "interview-coach": SCENE_KEYS.INTERVIEW_COACH,
+  "job-analyzer": SCENE_KEYS.JOB_ANALYZER,
+  "study-hall": SCENE_KEYS.STUDY_HALL,
 };
 
 export class CareerCityScene extends Phaser.Scene {
@@ -73,10 +86,67 @@ export class CareerCityScene extends Phaser.Scene {
     this.setupTouchEvents();
     this.addScanlineOverlay();
 
+    // Hook Phaser's wake event — fires when scene.wake() is called from an interior
+    this.events.on(
+      "wake",
+      (
+        _sys: Phaser.Scenes.Systems,
+        data: { exitX?: number; exitY?: number } | undefined,
+      ) => {
+        this.handleWake(data);
+      },
+    );
+
+    // Start overworld music (will be gated by AudioContext until user gesture)
+    musicManager.init();
+    musicManager.crossFadeTo(MUSIC_TRACKS.CAREER_CITY.key);
+
+    // Resume AudioContext on first player gesture (browser autoplay policy)
+    this.input.once("pointerdown", () =>
+      musicManager.resumeAudioContextAndPlay(),
+    );
+    this.input.keyboard?.once("keydown", () =>
+      musicManager.resumeAudioContextAndPlay(),
+    );
+
     window.addEventListener(
       GAME_EVENTS.FAST_TRAVEL,
       this.handleFastTravel as EventListener,
     );
+
+    // Fallback: interior:exit event when scene wasn't sleeping
+    window.addEventListener(
+      GAME_EVENTS.INTERIOR_EXIT,
+      this.handleInteriorExit as EventListener,
+    );
+  }
+
+  /** Called by Phaser wake event when returning from an interior scene */
+  private handleWake(
+    data: { exitX?: number; exitY?: number } | undefined,
+  ): void {
+    // Reposition player to just outside the building entrance
+    if (data?.exitX !== undefined && data?.exitY !== undefined) {
+      this.player.setPosition(data.exitX, data.exitY);
+    } else {
+      // Fallback: center of map
+      this.player.setPosition(MAP_WIDTH / 2, MAP_HEIGHT / 2);
+    }
+
+    // Re-enable physics and input
+    if (this.player.body) {
+      (this.player.body as Phaser.Physics.Arcade.Body).setVelocity(0, 0);
+    }
+
+    // Restore camera bounds (they may have been altered)
+    this.cameras.main.setBounds(0, 0, MAP_WIDTH, MAP_HEIGHT);
+    this.cameras.main.startFollow(this.player, true, 0.09, 0.09);
+
+    // Fade back in
+    this.cameras.main.fadeIn(350, 0, 0, 0);
+
+    // Resume town music
+    musicManager.crossFadeTo(MUSIC_TRACKS.CAREER_CITY.key);
   }
 
   // ── TERRAIN ─────────────────────────────────────────────────────────────────
@@ -312,10 +382,12 @@ export class CareerCityScene extends Phaser.Scene {
 
     this.add
       .text(x, y - 35, label, {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: "5px",
+        fontFamily: FONT,
+        fontSize: "9px",
         color: "#39ff14",
         align: "center",
+        stroke: "#000000",
+        strokeThickness: 2,
       })
       .setOrigin(0.5, 0.5)
       .setDepth(4);
@@ -326,11 +398,12 @@ export class CareerCityScene extends Phaser.Scene {
   private addDistrictLabels(): void {
     this.add
       .text(MAP_WIDTH / 2, 38, "✦ CAREER CITY ✦", {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: "14px",
+        fontFamily: FONT,
+        fontSize: "20px",
         color: "#39ff14",
         stroke: "#000000",
-        strokeThickness: 4,
+        strokeThickness: 5,
+        fontStyle: "bold",
       })
       .setOrigin(0.5, 0.5)
       .setDepth(22);
@@ -345,17 +418,18 @@ export class CareerCityScene extends Phaser.Scene {
     for (const d of districts) {
       this.add
         .text(d.x, d.y, d.text, {
-          fontFamily: '"Press Start 2P", monospace',
-          fontSize: "6px",
+          fontFamily: FONT,
+          fontSize: "12px",
           color: d.color,
           align: "center",
           stroke: "#000000",
-          strokeThickness: 2,
+          strokeThickness: 3,
           lineSpacing: 4,
+          fontStyle: "bold",
         })
         .setOrigin(0.5, 0.5)
         .setDepth(4)
-        .setAlpha(0.7);
+        .setAlpha(0.85);
     }
   }
 
@@ -439,12 +513,32 @@ export class CareerCityScene extends Phaser.Scene {
     this.isDialogueOpen = true;
     npc.playInteractAnimation();
     const dialogue = npc.getNextDialogue();
-    window.dispatchEvent(
-      new CustomEvent(GAME_EVENTS.NPC_INTERACT, {
-        detail: { npc: npc.config, dialogue },
-      }),
-    );
+
     this.showDialogueBubble(npc, dialogue);
+
+    // Go straight to interior scene after brief dialogue — NO modal
+    const sceneKey = NPC_SCENE_MAP[npc.config.key];
+    if (sceneKey) {
+      this.time.delayedCall(600, () => {
+        this.closeDialogue();
+        this.cameras.main.fadeOut(400, 0, 0, 0);
+        this.time.delayedCall(420, () => {
+          // Use sleep (not pause) so the wake event fires correctly on return
+          this.scene.sleep(SCENE_KEYS.CAREER_CITY);
+          this.scene.launch(sceneKey, {
+            fromScene: SCENE_KEYS.CAREER_CITY,
+            exitX: npc.x,
+            exitY: npc.y + 90,
+          });
+          // Award XP for visiting a building
+          window.dispatchEvent(
+            new CustomEvent(GAME_EVENTS.XP_GAINED, {
+              detail: { amount: 10, reason: "Visited Building" },
+            }),
+          );
+        });
+      });
+    }
   }
 
   private showDialogueBubble(npc: NPC, text: string): void {
@@ -458,11 +552,11 @@ export class CareerCityScene extends Phaser.Scene {
     bg.setStrokeStyle(3, npc.config.color, 1);
 
     const txt = this.add.text(0, -4, text.split("\n"), {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: "7px",
+      fontFamily: FONT,
+      fontSize: "11px",
       color: colorHex,
       align: "center",
-      lineSpacing: 7,
+      lineSpacing: 6,
       wordWrap: { width: bubbleW - 20 },
     });
     txt.setOrigin(0.5, 0.5);
@@ -584,6 +678,14 @@ export class CareerCityScene extends Phaser.Scene {
     }
   };
 
+  handleInteriorExit = (e: Event): void => {
+    const { exitX, exitY } = (e as CustomEvent).detail as {
+      exitX?: number;
+      exitY?: number;
+    };
+    this.handleWake({ exitX, exitY });
+  };
+
   // ── UPDATE ────────────────────────────────────────────────────────────────────
 
   update(_time: number, delta: number): void {
@@ -628,6 +730,10 @@ export class CareerCityScene extends Phaser.Scene {
     window.removeEventListener(
       GAME_EVENTS.FAST_TRAVEL,
       this.handleFastTravel as EventListener,
+    );
+    window.removeEventListener(
+      GAME_EVENTS.INTERIOR_EXIT,
+      this.handleInteriorExit as EventListener,
     );
   }
 }
