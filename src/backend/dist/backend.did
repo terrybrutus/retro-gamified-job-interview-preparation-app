@@ -1,0 +1,100 @@
+type _ImmutableObjectStorageRefillResult = 
+ record {
+   success: opt bool;
+   topped_up_amount: opt nat;
+ };
+type _ImmutableObjectStorageRefillInformation = record {
+                                                  proposed_top_up_amount:
+                                                   opt nat;};
+type _ImmutableObjectStorageCreateCertificateResult = 
+ record {
+   blob_hash: text;
+   method: text;
+ };
+type UserRole = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type UserProfile = record {name: text;};
+type FileReference = 
+ record {
+   hash: text;
+   path: text;
+ };
+service : {
+  _immutableObjectStorageBlobsAreLive: (hashes: vec blob) -> (vec bool) query;
+  _immutableObjectStorageBlobsToDelete: () -> (vec blob) query;
+  _immutableObjectStorageConfirmBlobDeletion: (blobs: vec blob) -> ();
+  _immutableObjectStorageCreateCertificate: (blobHash: text) ->
+   (_ImmutableObjectStorageCreateCertificateResult);
+  _immutableObjectStorageRefillCashier: (refillInformation:
+   opt _ImmutableObjectStorageRefillInformation) ->
+   (_ImmutableObjectStorageRefillResult);
+  _immutableObjectStorageUpdateGatewayPrincipals: () -> ();
+  _initializeAccessControl: () -> ();
+  addXP: (userId: text, amount: nat) -> (nat);
+  assignCallerUserRole: (user: principal, role: UserRole) -> ();
+  dropFileReference: (path: text) -> ();
+  getAcceptedSuggestions: () -> (vec record {
+                                       text;
+                                       text;
+                                     }) query;
+  getAgentResults: () -> (vec record {
+                                principal;
+                                text;
+                              }) query;
+  getApiKey: () -> (opt text) query;
+  getCallerUserProfile: () -> (opt UserProfile) query;
+  getCallerUserRole: () -> (UserRole) query;
+  getCareerLevel: (userId: text) -> (nat) query;
+  getCoverLetterFeedbackSessions: () -> (vec record {
+                                               text;
+                                               text;
+                                             }) query;
+  getCoverLetters: () -> (vec record {
+                                text;
+                                text;
+                              }) query;
+  getExportNotes: () -> (vec record {
+                               text;
+                               text;
+                             }) query;
+  getFileReference: (path: text) -> (FileReference) query;
+  getFlashcardSets: () -> (vec record {
+                                 text;
+                                 text;
+                               }) query;
+  getInterviewFeedback: () -> (vec record {
+                                     text;
+                                     text;
+                                   }) query;
+  getResumeProfiles: () -> (vec record {
+                                  text;
+                                  text;
+                                }) query;
+  getUserNotes: () -> (vec record {
+                             text;
+                             text;
+                           }) query;
+  getUserProfile: (user: principal) -> (opt UserProfile) query;
+  getWorkflowState: () -> (opt text) query;
+  getXP: (userId: text) -> (nat) query;
+  isCallerAdmin: () -> (bool) query;
+  listFileReferences: () -> (vec FileReference) query;
+  registerFileReference: (path: text, hash: text) -> ();
+  saveAcceptedSuggestion: (jobId: text, suggestion: text) -> ();
+  saveAgentResult: (agentId: text, result: text) -> ();
+  saveApiKey: (apiKey: text) -> ();
+  saveCallerUserProfile: (profile: UserProfile) -> ();
+  saveCoverLetter: (letterId: text, letterContent: text) -> ();
+  saveCoverLetterFeedbackSession: (sessionId: text, sessionData: text) -> ();
+  saveExportNote: (noteId: text, noteContent: text) -> ();
+  saveFlashcardSet: (setLabel: text, flashcards: text) -> ();
+  saveResumeProfile: (profileName: text, profileData: text) -> ();
+  saveWorkflowState: (state: text) -> ();
+  saveXP: (userId: text, xp: nat) -> ();
+  submitInterviewFeedback: (feedbackId: text, feedbackContent: text) -> ();
+  submitUserNote: (note: text) -> ();
+}

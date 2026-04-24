@@ -1,0 +1,57 @@
+import type { backendInterface, _ImmutableObjectStorageRefillInformation } from "../backend";
+import type { Principal } from "@icp-sdk/core/principal";
+import { UserRole } from "../backend";
+
+export const mockBackend: backendInterface = {
+  addXP: async (_userId: string, _amount: bigint) => BigInt(250),
+  assignCallerUserRole: async (_user: Principal, _role: UserRole) => undefined,
+  dropFileReference: async (_path: string) => undefined,
+  getAcceptedSuggestions: async () => [],
+  getAgentResults: async () => [],
+  getApiKey: async () => null,
+  getCallerUserProfile: async () => ({ name: "Career Hero" }),
+  getCallerUserRole: async () => UserRole.user,
+  getCareerLevel: async (_userId: string) => BigInt(3),
+  getCoverLetterFeedbackSessions: async () => [],
+  getCoverLetters: async () => [],
+  getExportNotes: async () => [],
+  getFileReference: async (path: string) => ({ hash: "abc123", path }),
+  getFlashcardSets: async () => [
+    ["Interview Basics", JSON.stringify([{ q: "Tell me about yourself", a: "Keep it relevant and concise." }])],
+  ],
+  getInterviewFeedback: async () => [
+    ["feedback-1", "Strong communication skills. Work on quantifying achievements."],
+  ],
+  getResumeProfiles: async () => [
+    ["master-resume", JSON.stringify({ name: "Career Hero", title: "Instructional Designer" })],
+  ],
+  getUserNotes: async () => [
+    ["note-1", "Remember to tailor resume for each application."],
+  ],
+  getUserProfile: async (_user: Principal) => ({ name: "Career Hero" }),
+  getWorkflowState: async () => null,
+  getXP: async (_userId: string) => BigInt(250),
+  isCallerAdmin: async () => false,
+  listFileReferences: async () => [],
+  registerFileReference: async (_path: string, _hash: string) => undefined,
+  saveAcceptedSuggestion: async (_jobId: string, _suggestion: string) => undefined,
+  saveAgentResult: async (_agentId: string, _result: string) => undefined,
+  saveApiKey: async (_apiKey: string) => undefined,
+  saveCallerUserProfile: async (_profile) => undefined,
+  saveCoverLetter: async (_letterId: string, _letterContent: string) => undefined,
+  saveCoverLetterFeedbackSession: async (_sessionId: string, _sessionData: string) => undefined,
+  saveExportNote: async (_noteId: string, _noteContent: string) => undefined,
+  saveFlashcardSet: async (_setLabel: string, _flashcards: string) => undefined,
+  saveResumeProfile: async (_profileName: string, _profileData: string) => undefined,
+  saveWorkflowState: async (_state: string) => undefined,
+  saveXP: async (_userId: string, _xp: bigint) => undefined,
+  submitInterviewFeedback: async (_feedbackId: string, _feedbackContent: string) => undefined,
+  submitUserNote: async (_note: string) => undefined,
+  _immutableObjectStorageBlobsAreLive: async (_hashes: Array<Uint8Array>) => [],
+  _immutableObjectStorageBlobsToDelete: async () => [],
+  _immutableObjectStorageConfirmBlobDeletion: async (_blobs: Array<Uint8Array>) => undefined,
+  _immutableObjectStorageCreateCertificate: async (_blobHash: string) => ({ method: "GET", blob_hash: _blobHash }),
+  _immutableObjectStorageRefillCashier: async (_info: _ImmutableObjectStorageRefillInformation | null) => ({ success: true, topped_up_amount: BigInt(0) }),
+  _immutableObjectStorageUpdateGatewayPrincipals: async () => undefined,
+  _initializeAccessControl: async () => undefined,
+};

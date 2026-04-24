@@ -1,0 +1,31 @@
+{
+  "overview": "A retro-themed, gamified job application platform where users walk around a top-down RPG town (Zelda/Pokemon style) to interact with AI agent NPCs for resume tailoring, cover letter generation, job analysis, and interview prep. Built with Phaser 3 for the game world and React for workflow modals. XP and Career Level system rewards progress. Fast-travel minimap for power users. Dry, self-aware humor throughout.",
+  "features": [
+    "Phaser 3 RPG Town with character movement and 5 interactive NPC agents",
+    "XP and Career Level system persisted to backend",
+    "Fast-travel minimap overlay (pause menu style)",
+    "Dry humor NPC dialogue (e.g. 'Another resume? You're brave.')",
+    "Master resume management with always-accessible navigation button",
+    "Cover letter generator with strict tone rules — first person, no company name, portfolio links included",
+    "Resume tailoring engine with ATS-friendly output",
+    "Interview advice and flashcard study materials always accessible",
+    "Notes manager integrated throughout workflow",
+    "Responsive for both desktop and mobile from day one",
+    "Backend mo:base to mo:core migration",
+    "Placeholder AI interactions ready for real Gemini API later"
+  ],
+  "category": "productivity",
+  "tags": [
+    "game",
+    "rpg",
+    "job-search",
+    "resume",
+    "cover-letter",
+    "phaser",
+    "retro",
+    "gamification",
+    "career",
+    "interview-prep"
+  ],
+  "last_updated": "2026-04-23T21:01:07.731Z"
+}

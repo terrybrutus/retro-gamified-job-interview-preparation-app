@@ -1,0 +1,74 @@
+type UserRole = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type UserProfile = record {name: text;};
+type FileReference = 
+ record {
+   hash: text;
+   path: text;
+ };
+service : {
+  assignCallerUserRole: (user: principal, role: UserRole) -> ();
+  dropFileReference: (path: text) -> ();
+  getAcceptedSuggestions: () -> (vec record {
+                                       text;
+                                       text;
+                                     }) query;
+  getAgentResults: () -> (vec record {
+                                principal;
+                                text;
+                              }) query;
+  getApiKey: () -> (opt text) query;
+  getCallerUserProfile: () -> (opt UserProfile) query;
+  getCallerUserRole: () -> (UserRole) query;
+  getCoverLetterFeedbackSessions: () -> (vec record {
+                                               text;
+                                               text;
+                                             }) query;
+  getCoverLetters: () -> (vec record {
+                                text;
+                                text;
+                              }) query;
+  getExportNotes: () -> (vec record {
+                               text;
+                               text;
+                             }) query;
+  getFileReference: (path: text) -> (FileReference) query;
+  getFlashcardSets: () -> (vec record {
+                                 text;
+                                 text;
+                               }) query;
+  getInterviewFeedback: () -> (vec record {
+                                     text;
+                                     text;
+                                   }) query;
+  getResumeProfiles: () -> (vec record {
+                                  text;
+                                  text;
+                                }) query;
+  getUserNotes: () -> (vec record {
+                             text;
+                             text;
+                           }) query;
+  getUserProfile: (user: principal) -> (opt UserProfile) query;
+  getWorkflowState: () -> (opt text) query;
+  initializeAccessControl: () -> ();
+  isCallerAdmin: () -> (bool) query;
+  listFileReferences: () -> (vec FileReference) query;
+  registerFileReference: (path: text, hash: text) -> ();
+  saveAcceptedSuggestion: (jobId: text, suggestion: text) -> ();
+  saveAgentResult: (agentId: text, result: text) -> ();
+  saveApiKey: (apiKey: text) -> ();
+  saveCallerUserProfile: (profile: UserProfile) -> ();
+  saveCoverLetter: (letterId: text, letterContent: text) -> ();
+  saveCoverLetterFeedbackSession: (sessionId: text, sessionData: text) -> ();
+  saveExportNote: (noteId: text, noteContent: text) -> ();
+  saveFlashcardSet: (setLabel: text, flashcards: text) -> ();
+  saveResumeProfile: (profileName: text, profileData: text) -> ();
+  saveWorkflowState: (state: text) -> ();
+  submitInterviewFeedback: (feedbackId: text, feedbackContent: text) -> ();
+  submitUserNote: (note: text) -> ();
+}
