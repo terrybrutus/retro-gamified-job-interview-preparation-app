@@ -11,7 +11,6 @@ export class NPC extends Phaser.GameObjects.Container {
   private buildingSprite!: Phaser.GameObjects.Image;
   private npcSprite!: Phaser.GameObjects.Sprite;
   private buildingLabel!: Phaser.GameObjects.Text;
-  private nameLabel!: Phaser.GameObjects.Text;
   private interactLabel!: Phaser.GameObjects.Text;
   private glowRect!: Phaser.GameObjects.Rectangle;
   private proximityCircle!: Phaser.GameObjects.Arc;
@@ -46,19 +45,26 @@ export class NPC extends Phaser.GameObjects.Container {
     this.buildingSprite.setOrigin(0.5, 0.5);
     this.add(this.buildingSprite);
 
-    // Building sign label (floating above building)
-    this.buildingLabel = scene.add.text(0, -120, config.label, {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: "7px",
-      color: this.colorToHex(config.color),
+    // Building sign label — larger, centered above the building roof
+    this.buildingLabel = scene.add.text(0, -128, config.label, {
+      fontFamily: "Orbitron, sans-serif",
+      fontSize: "22px",
+      fontStyle: "bold",
+      color: config.textColor,
       align: "center",
       stroke: "#000000",
-      strokeThickness: 3,
+      strokeThickness: 2,
       lineSpacing: 4,
-      backgroundColor: "#000000cc",
-      padding: { x: 4, y: 2 },
+      shadow: {
+        offsetX: 0,
+        offsetY: 0,
+        color: config.textColor,
+        blur: 10,
+        fill: true,
+      },
     });
-    this.buildingLabel.setOrigin(0.5, 0.5);
+    this.buildingLabel.setOrigin(0.5, 1);
+    this.buildingLabel.setResolution(window.devicePixelRatio || 1);
     this.add(this.buildingLabel);
 
     // NPC sprite with idle animation
@@ -83,31 +89,18 @@ export class NPC extends Phaser.GameObjects.Container {
     this.npcSprite.play(animKey);
     this.add(this.npcSprite);
 
-    // NPC name above character
-    this.nameLabel = scene.add.text(0, 4, config.name, {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: "6px",
-      color: this.colorToHex(config.color),
-      align: "center",
-      stroke: "#000000",
-      strokeThickness: 2,
-      backgroundColor: "#000000bb",
-      padding: { x: 3, y: 2 },
-    });
-    this.nameLabel.setOrigin(0.5, 0.5);
-    this.add(this.nameLabel);
-
     // Interact label
     this.interactLabel = scene.add.text(0, 44, "[ E ] TALK", {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: "6px",
+      fontFamily: "Orbitron, sans-serif",
+      fontSize: "16px",
       color: "#39ff14",
       backgroundColor: "#000000dd",
-      padding: { x: 4, y: 2 },
+      padding: { x: 6, y: 4 },
       stroke: "#000000",
-      strokeThickness: 2,
+      strokeThickness: 1,
     });
     this.interactLabel.setOrigin(0.5, 0.5);
+    this.interactLabel.setResolution(window.devicePixelRatio || 1);
     this.interactLabel.setVisible(false);
     this.add(this.interactLabel);
 

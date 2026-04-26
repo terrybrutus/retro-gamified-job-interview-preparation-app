@@ -32,6 +32,10 @@
     --neon-magenta: 0.65 1 310;
     --neon-cyan: 0.75 1 195;
     --neon-amber: 0.75 1 75;
+
+    /* Layout heights — single source of truth for nav + hud */
+    --nav-bar-h: 52px;
+    --hud-bar-h: 56px;
   }
 
   * {
@@ -43,25 +47,40 @@
     color: oklch(var(--neon-green));
     font-family: "Orbitron", sans-serif;
     line-height: 1.6;
-    -webkit-font-smoothing: none;
-    -moz-osx-font-smoothing: grayscale;
-    image-rendering: pixelated;
-    image-rendering: -moz-crisp-edges;
-    image-rendering: crisp-edges;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: auto;
+    text-rendering: optimizeLegibility;
+    overflow: hidden;
+    height: 100dvh;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
   }
 
   html {
     scroll-behavior: smooth;
+    /* 16px base — gives clean em/rem sizing, 0.8em = 12.8px, 1em = 16px */
+    font-size: 16px;
+    overflow: hidden;
+    height: 100%;
   }
 
   *:focus-visible {
     outline: 2px solid oklch(var(--neon-cyan));
     outline-offset: 4px;
   }
+
+  /* Safe-area padding helpers for notched devices */
+  .safe-area-inset-left {
+    padding-left: env(safe-area-inset-left, 0px);
+  }
+  .safe-area-inset-right {
+    padding-right: env(safe-area-inset-right, 0px);
+  }
 }
 
 @layer components {
-  /* Game HUD Elements */
+  /* ── Game root container ───────────────────────────────────────────────── */
   #game-container {
     width: 100%;
     max-width: 100vw;
@@ -74,21 +93,21 @@
     image-rendering: pixelated;
     image-rendering: -moz-crisp-edges;
     image-rendering: crisp-edges;
+    /* ensure canvas never creates its own stacking context above HUD */
+    position: relative;
+    z-index: 1;
   }
 
-  /* Retro theme colors */
+  /* ── Retro theme colors ────────────────────────────────────────────────── */
   .text-neon-green {
     color: oklch(var(--neon-green));
   }
-
   .text-neon-magenta {
     color: oklch(var(--neon-magenta));
   }
-
   .text-neon-cyan {
     color: oklch(var(--neon-cyan));
   }
-
   .text-neon-amber {
     color: oklch(var(--neon-amber));
   }
@@ -96,15 +115,12 @@
   .bg-neon-green {
     background-color: oklch(var(--neon-green));
   }
-
   .bg-neon-magenta {
     background-color: oklch(var(--neon-magenta));
   }
-
   .bg-neon-cyan {
     background-color: oklch(var(--neon-cyan));
   }
-
   .bg-neon-amber {
     background-color: oklch(var(--neon-amber));
   }
@@ -112,39 +128,36 @@
   .border-neon-green {
     border-color: oklch(var(--neon-green));
   }
-
   .border-neon-magenta {
     border-color: oklch(var(--neon-magenta));
   }
-
   .border-neon-cyan {
     border-color: oklch(var(--neon-cyan));
   }
-
   .border-neon-amber {
     border-color: oklch(var(--neon-amber));
   }
 
-  /* Game HUD Elements */
+  /* ── Game HUD ─────────────────────────────────────────────────────────── */
   .game-hud {
     position: absolute;
     font-family: "Orbitron", sans-serif;
     color: oklch(var(--neon-green));
     background: #000000;
     border: 4px solid oklch(var(--neon-green));
-    padding: 8px 12px;
+    padding: 0.5em 0.75em;
     z-index: 100;
   }
 
   .game-hud-bottom {
-    bottom: 16px;
-    left: 16px;
-    right: 16px;
+    bottom: 1em;
+    left: 1em;
+    right: 1em;
   }
 
   .game-minimap {
-    top: 16px;
-    right: 16px;
+    top: 1em;
+    right: 1em;
     width: 160px;
     height: 120px;
     background: rgba(0, 0, 0, 0.8);
@@ -163,9 +176,9 @@
     position: absolute;
     background: #000000;
     border: 4px solid currentColor;
-    padding: 12px 16px;
+    padding: 0.75em 1em;
     max-width: 300px;
-    font-size: 10px;
+    font-size: 0.7em;
     line-height: 1.4;
     color: currentColor;
     text-transform: uppercase;
@@ -180,25 +193,28 @@
     border-top: 8px solid currentColor;
   }
 
-  /* Mobile Game Controls */
+  /* ── Mobile D-pad controls ────────────────────────────────────────────── */
   .game-controls {
     position: absolute;
-    bottom: 100px;
-    left: 16px;
-    display: grid;
-    grid-template-columns: repeat(3, 40px);
-    grid-gap: 4px;
-    z-index: 100;
+    bottom: 6.25em; /* stays above HUD bar */
+    right: 1em;
+    display: none;
+    z-index: 30;
+    /* safe area insets so the dpad respects device notch/home bar */
+    padding-right: env(safe-area-inset-right, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
   .game-button {
-    width: 40px;
-    height: 40px;
+    width: 2.75em; /* ≥44px at 16px base */
+    height: 2.75em;
+    min-width: 44px;
+    min-height: 44px;
     border: 2px solid oklch(var(--neon-green));
     background: #000000;
     color: oklch(var(--neon-green));
     cursor: pointer;
-    font-size: 12px;
+    font-size: 0.85em;
     font-weight: bold;
     transition: all 0.05s;
   }
@@ -208,20 +224,20 @@
     color: #000000;
   }
 
-  /* Hide controls on desktop */
-  @media (max-width: 768px) {
+  /* Show D-pad on touch devices in landscape only */
+  @media (max-width: 1024px) and (orientation: landscape) {
     .game-controls {
       display: grid;
     }
   }
-
-  @media (min-width: 769px) {
+  /* Always hide on large desktops */
+  @media (min-width: 1025px) {
     .game-controls {
-      display: none;
+      display: none !important;
     }
   }
 
-  /* NPC Visual Styles */
+  /* ── NPC Visual Styles ────────────────────────────────────────────────── */
   .npc-analyzer {
     color: oklch(var(--neon-green));
   }
@@ -238,11 +254,10 @@
     color: oklch(var(--neon-green));
   }
 
-  /* Retro effects */
+  /* ── Retro effects ────────────────────────────────────────────────────── */
   .retro-scanlines {
     position: relative;
   }
-
   .retro-scanlines::before {
     content: "";
     position: fixed;
@@ -284,12 +299,10 @@
     transition: all 0.1s;
     image-rendering: pixelated;
   }
-
   .retro-button:hover {
     transform: translate(-2px, -2px);
     box-shadow: 4px 4px 0 currentColor;
   }
-
   .retro-button:active {
     transform: translate(0, 0);
     box-shadow: none;
@@ -300,7 +313,6 @@
     background: #000000;
     image-rendering: pixelated;
   }
-
   .retro-input:focus {
     outline: none;
     box-shadow: 0 0 20px currentColor;
@@ -310,66 +322,57 @@
     border: 4px solid currentColor;
     background: #000000;
   }
-
   .retro-progress {
     background: #1a1a1a;
     border: 2px solid oklch(var(--neon-green));
   }
-
   .retro-progress > div {
     background: oklch(var(--neon-green));
     box-shadow: 0 0 10px oklch(var(--neon-green));
   }
 
-  /* Neon glow effects */
+  /* ── Neon glow ───────────────────────────────────────────────────────── */
   .shadow-neon-green {
     box-shadow: 0 0 20px oklch(var(--neon-green)), 0 0 40px
       oklch(var(--neon-green) / 0.5);
   }
-
   .shadow-neon-magenta {
     box-shadow: 0 0 20px oklch(var(--neon-magenta)), 0 0 40px
       oklch(var(--neon-magenta) / 0.5);
   }
-
   .shadow-neon-cyan {
     box-shadow: 0 0 20px oklch(var(--neon-cyan)), 0 0 40px
       oklch(var(--neon-cyan) / 0.5);
   }
-
   .shadow-neon-amber {
     box-shadow: 0 0 20px oklch(var(--neon-amber)), 0 0 40px
       oklch(var(--neon-amber) / 0.5);
   }
 
-  /* Pixel-perfect rendering */
+  /* ── Misc ─────────────────────────────────────────────────────────────── */
   .pixelated {
     image-rendering: pixelated;
     image-rendering: -moz-crisp-edges;
     image-rendering: crisp-edges;
   }
 
-  /* Font utilities */
   .font-orbitron {
     font-family: "Orbitron", sans-serif;
   }
-
-  /* Legacy alias kept for compatibility */
   .font-press-start {
     font-family: "Orbitron", sans-serif;
-  }
+  } /* legacy alias */
 
-  /* Touch targets */
+  /* Minimum accessible touch targets */
   .touch-target {
-    min-height: 44px;
-    min-width: 44px;
+    min-height: 2.75em;
+    min-width: 2.75em;
   }
 
-  /* Animations */
+  /* ── Animations ───────────────────────────────────────────────────────── */
   .animate-fade-in {
     animation: fadeIn 0.3s ease-out;
   }
-
   .animate-pulse-slow {
     animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
@@ -382,7 +385,6 @@
       opacity: 1;
     }
   }
-
   @keyframes pulse {
     0%,
     100% {
@@ -394,20 +396,19 @@
   }
 }
 
-/* Mobile optimizations */
+/* ── Mobile-specific overrides ────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .font-orbitron,
-  .font-press-start {
-    font-size: 10px;
-    line-height: 1.6;
+  :root {
+    /* Slightly smaller base on phones so more fits */
+    font-size: 14px;
   }
 
   .retro-button {
-    padding: 12px 16px;
+    padding: 0.75em 1em;
   }
 }
 
-/* High DPI displays */
+/* ── High DPI ─────────────────────────────────────────────────────────────── */
 @media (min-resolution: 192dpi) {
   body {
     -webkit-font-smoothing: none;

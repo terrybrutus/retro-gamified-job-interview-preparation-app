@@ -377,6 +377,12 @@ class MusicManager {
     return this._isMuted;
   }
 
+  /** Returns true when AudioContext hasn't been unlocked by a user gesture yet */
+  isAudioContextSuspended(): boolean {
+    if (!this.ctx) return true;
+    return this.ctx.state === "suspended";
+  }
+
   getCurrentTrackName(): string {
     return this.currentName;
   }

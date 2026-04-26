@@ -52,7 +52,7 @@ export function LoginScreen() {
               </Button>
             </div>
             <div className="text-center">
-              <p className="font-press-start text-neon-amber text-[8px] leading-relaxed">
+              <p className="font-press-start text-neon-amber text-[0.6em] leading-relaxed">
                 POWERED BY INTERNET IDENTITY
               </p>
             </div>

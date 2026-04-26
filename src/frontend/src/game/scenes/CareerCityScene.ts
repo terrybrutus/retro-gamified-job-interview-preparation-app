@@ -17,24 +17,21 @@ const FONT = "Orbitron, sans-serif";
 
 interface PropPlacement {
   type:
-    | "lamp"
     | "tree"
     | "bench"
     | "mailbox"
     | "barrel"
     | "bush"
     | "flowers"
-    | "fountain"
-    | "signpost";
+    | "fountain";
   x: number;
   y: number;
   flipX?: boolean;
-  label?: string;
 }
 
 // Atlas source regions (x, y, w, h) within "prop-atlas" texture
+// Lamp posts removed — will be re-added in a future pass once placement is decided
 const PROP_REGIONS: Record<string, [number, number, number, number]> = {
-  lamp: [2, 0, 32, 64],
   tree: [42, 0, 32, 64],
   bench: [84, 0, 32, 20],
   mailbox: [124, 0, 24, 32],
@@ -68,11 +65,26 @@ export class CareerCityScene extends Phaser.Scene {
   private dialogueBubble?: Phaser.GameObjects.Container;
   private isDialogueOpen = false;
 
+  // Click-and-drag pan state
+  private isDragging = false;
+  /** True once the pointer has moved enough to count as a real drag (not just a click) */
+  private hasDraggedBeyondThreshold = false;
+  private dragStartX = 0;
+  private dragStartY = 0;
+  private cameraScrollXAtDragStart = 0;
+  private cameraScrollYAtDragStart = 0;
+  /** True after a drag ends — camera is free-panned. Re-enables follow on next player movement. */
+  private isCameraFreeAfterDrag = false;
+
   constructor() {
     super({ key: SCENE_KEYS.CAREER_CITY });
   }
 
-  create(): void {
+  create(data?: {
+    exitX?: number;
+    exitY?: number;
+    fastTravelTo?: NPCKey;
+  }): void {
     this.physics.world.setBounds(0, 0, MAP_WIDTH, MAP_HEIGHT);
 
     this.buildTerrain();
@@ -86,28 +98,41 @@ export class CareerCityScene extends Phaser.Scene {
     this.setupTouchEvents();
     this.addScanlineOverlay();
 
-    // Hook Phaser's wake event — fires when scene.wake() is called from an interior
+    // Hook Phaser's wake event — fires when scene.wake() is called from an interior.
+    // Re-register on every create() so it's never stale after a scene restart.
     this.events.on(
       "wake",
       (
         _sys: Phaser.Scenes.Systems,
-        data: { exitX?: number; exitY?: number } | undefined,
+        wakeData:
+          | { exitX?: number; exitY?: number; fastTravelTo?: NPCKey }
+          | undefined,
       ) => {
-        this.handleWake(data);
+        this.handleWake(wakeData);
       },
     );
 
-    // Start overworld music (will be gated by AudioContext until user gesture)
+    // Audio: initialise manager here (scene owns audio, not BootScene).
+    // AudioContext unlock is deferred to the first user gesture — this satisfies
+    // browser autoplay policy and ensures no frozen/glitching note during the
+    // black-screen gap while the world was still building.
     musicManager.init();
+
+    // Queue the overworld track — will start as soon as the AudioContext is
+    // unlocked by the first pointer/key interaction.
     musicManager.crossFadeTo(MUSIC_TRACKS.CAREER_CITY.key);
 
-    // Resume AudioContext on first player gesture (browser autoplay policy)
+    // Unlock AudioContext on the first gesture so music starts naturally.
     this.input.once("pointerdown", () =>
       musicManager.resumeAudioContextAndPlay(),
     );
     this.input.keyboard?.once("keydown", () =>
       musicManager.resumeAudioContextAndPlay(),
     );
+
+    // Signal BootScene that the world is fully built and rendered.
+    // BootScene listens for this event to fade out its loading overlay.
+    this.game.events.emit("careerCityReady");
 
     window.addEventListener(
       GAME_EVENTS.FAST_TRAVEL,
@@ -119,12 +144,40 @@ export class CareerCityScene extends Phaser.Scene {
       GAME_EVENTS.INTERIOR_EXIT,
       this.handleInteriorExit as EventListener,
     );
+
+    // If this scene was restarted fresh from an interior exit, apply exit position now.
+    if (data?.exitX !== undefined && data?.exitY !== undefined) {
+      this.handleWake(data);
+    }
   }
 
   /** Called by Phaser wake event when returning from an interior scene */
   private handleWake(
-    data: { exitX?: number; exitY?: number } | undefined,
+    data: { exitX?: number; exitY?: number; fastTravelTo?: NPCKey } | undefined,
   ): void {
+    // If a fast-travel destination was requested from inside a building,
+    // teleport directly to that NPC instead of the building exit position.
+    if (data?.fastTravelTo) {
+      const target = NPC_CONFIGS.find((c) => c.key === data.fastTravelTo);
+      if (target) {
+        this.player.setPosition(target.x, target.y + 90);
+        if (this.player.body) {
+          (this.player.body as Phaser.Physics.Arcade.Body).setVelocity(0, 0);
+        }
+        this.cameras.main.setBounds(0, 0, MAP_WIDTH, MAP_HEIGHT);
+        this.cameras.main.startFollow(this.player, true, 0.09, 0.09);
+        this.cameras.main.fadeIn(350, 0, 0, 0);
+        this.cameras.main.pan(target.x, target.y + 90, 400, "Power2");
+        musicManager.crossFadeTo(MUSIC_TRACKS.CAREER_CITY.key);
+        window.dispatchEvent(
+          new CustomEvent(GAME_EVENTS.XP_GAINED, {
+            detail: { amount: 5, reason: "Fast Travel" },
+          }),
+        );
+        return;
+      }
+    }
+
     // Reposition player to just outside the building entrance
     if (data?.exitX !== undefined && data?.exitY !== undefined) {
       this.player.setPosition(data.exitX, data.exitY);
@@ -248,63 +301,70 @@ export class CareerCityScene extends Phaser.Scene {
 
   private placeProps(): void {
     const props: PropPlacement[] = [
-      // Lamp posts along plaza and main paths
-      { type: "lamp", x: 596, y: 400 },
-      { type: "lamp", x: 1000, y: 400 },
-      { type: "lamp", x: 596, y: 800 },
-      { type: "lamp", x: 1000, y: 800 },
-      { type: "lamp", x: 300, y: 580 },
-      { type: "lamp", x: 300, y: 680 },
-      { type: "lamp", x: 820, y: 135 },
-      { type: "lamp", x: 820, y: 545 },
-      // Trees in park area (north) and corners
+      // ── TREES: only in grass zones (corners and park area) ──
       { type: "tree", x: 100, y: 100 },
       { type: "tree", x: 200, y: 130 },
       { type: "tree", x: 160, y: 200 },
       { type: "tree", x: 980, y: 100 },
       { type: "tree", x: 1080, y: 150 },
       { type: "tree", x: 1050, y: 80 },
-      { type: "tree", x: 100, y: 1050 },
-      { type: "tree", x: 180, y: 1080 },
-      // Benches near fountain
-      { type: "bench", x: 640, y: 575 },
-      { type: "bench", x: 960, y: 575 },
+      { type: "tree", x: 60, y: 1100 },
+      { type: "tree", x: 200, y: 1130 },
+      { type: "tree", x: 1400, y: 1050 },
+      { type: "tree", x: 1480, y: 1000 },
+      { type: "tree", x: 60, y: 840 },
+      { type: "tree", x: 1480, y: 200 },
+
+      // ── BENCHES: inside the stone plaza (grass/plaza zone, not on roads) ──
+      { type: "bench", x: 640, y: 570 },
+      { type: "bench", x: 960, y: 570 },
       { type: "bench", x: 800, y: 445 },
-      { type: "bench", x: 800, y: 755 },
-      // Mailboxes
-      { type: "mailbox", x: 520, y: 880 },
-      { type: "mailbox", x: 380, y: 880 },
-      { type: "mailbox", x: 1350, y: 420 },
-      // Barrels near buildings
-      { type: "barrel", x: 1060, y: 365 },
-      { type: "barrel", x: 1080, y: 375 },
-      { type: "barrel", x: 1060, y: 615 },
-      { type: "barrel", x: 1080, y: 625 },
-      // Bushes
-      { type: "bush", x: 555, y: 355 },
-      { type: "bush", x: 580, y: 340 },
-      { type: "bush", x: 1010, y: 355 },
-      { type: "bush", x: 1040, y: 340 },
-      { type: "bush", x: 200, y: 455 },
-      { type: "bush", x: 230, y: 465 },
-      { type: "bush", x: 555, y: 855 },
-      { type: "bush", x: 580, y: 870 },
-      { type: "bush", x: 1350, y: 205 },
-      { type: "bush", x: 1380, y: 185 },
-      // Flower patches
-      { type: "flowers", x: 650, y: 415 },
-      { type: "flowers", x: 950, y: 415 },
-      { type: "flowers", x: 650, y: 790 },
-      { type: "flowers", x: 950, y: 790 },
-      { type: "flowers", x: 440, y: 915 },
-      { type: "flowers", x: 700, y: 145 },
-      // Fountain in center plaza
+      { type: "bench", x: 800, y: 750 },
+
+      // ── MAILBOXES: on grass near buildings ──
+      { type: "mailbox", x: 520, y: 900 },
+      { type: "mailbox", x: 380, y: 900 },
+      { type: "mailbox", x: 1350, y: 180 },
+
+      // ── BARRELS: near buildings on grass ──
+      { type: "barrel", x: 1080, y: 365 },
+      { type: "barrel", x: 1100, y: 375 },
+      { type: "barrel", x: 1080, y: 600 },
+      { type: "barrel", x: 1100, y: 615 },
+
+      // ── BUSHES: only on grass areas (not on brown roads) ──
+      // North grass quadrants
+      { type: "bush", x: 560, y: 340 },
+      { type: "bush", x: 590, y: 325 },
+      { type: "bush", x: 1010, y: 340 },
+      { type: "bush", x: 1040, y: 325 },
+      // West grass area
+      { type: "bush", x: 200, y: 440 },
+      { type: "bush", x: 230, y: 455 },
+      // South grass quadrants
+      { type: "bush", x: 555, y: 870 },
+      { type: "bush", x: 580, y: 890 },
+      // Northeast grass
+      { type: "bush", x: 1350, y: 190 },
+      { type: "bush", x: 1380, y: 175 },
+      // Far corners
+      { type: "bush", x: 60, y: 940 },
+      { type: "bush", x: 90, y: 960 },
+      { type: "bush", x: 1440, y: 900 },
+      { type: "bush", x: 1470, y: 880 },
+
+      // ── FLOWERS: only on grass ──
+      { type: "flowers", x: 650, y: 400 },
+      { type: "flowers", x: 950, y: 400 },
+      { type: "flowers", x: 650, y: 795 },
+      { type: "flowers", x: 950, y: 795 },
+      { type: "flowers", x: 440, y: 930 },
+      { type: "flowers", x: 700, y: 140 },
+      { type: "flowers", x: 120, y: 140 },
+      { type: "flowers", x: 1400, y: 140 },
+
+      // ── FOUNTAIN: center of stone plaza (non-road) ──
       { type: "fountain", x: 800, y: 625 },
-      // Signposts
-      { type: "signpost", x: 700, y: 430, label: "CAREER CITY" },
-      { type: "signpost", x: 1100, y: 430, label: "BUSINESS DISTRICT" },
-      { type: "signpost", x: 480, y: 430, label: "WEST QUARTER" },
-      { type: "signpost", x: 700, y: 820, label: "SERVICE LANE" },
     ];
 
     for (const prop of props) {
@@ -323,11 +383,6 @@ export class CareerCityScene extends Phaser.Scene {
   }
 
   private placeProp(prop: PropPlacement): void {
-    if (prop.type === "signpost") {
-      this.drawSignpost(prop.x, prop.y, prop.label ?? "");
-      return;
-    }
-
     const reg = PROP_REGIONS[prop.type];
     if (!reg) return;
     const [sx, sy, sw, sh] = reg;
@@ -370,57 +425,42 @@ export class CareerCityScene extends Phaser.Scene {
     }
   }
 
-  private drawSignpost(x: number, y: number, label: string): void {
-    const g = this.add.graphics();
-    g.fillStyle(0x757575, 1);
-    g.fillRect(x - 1, y - 24, 3, 24);
-    g.fillStyle(0x1a1a1a, 1);
-    g.fillRect(x - 40, y - 44, 80, 18);
-    g.lineStyle(2, COLORS.NEON_GREEN, 0.6);
-    g.strokeRect(x - 40, y - 44, 80, 18);
-    g.setDepth(3);
-
-    this.add
-      .text(x, y - 35, label, {
-        fontFamily: FONT,
-        fontSize: "9px",
-        color: "#39ff14",
-        align: "center",
-        stroke: "#000000",
-        strokeThickness: 2,
-      })
-      .setOrigin(0.5, 0.5)
-      .setDepth(4);
-  }
-
   // ── DISTRICT LABELS ──────────────────────────────────────────────────────────
 
   private addDistrictLabels(): void {
-    this.add
-      .text(MAP_WIDTH / 2, 38, "✦ CAREER CITY ✦", {
+    // CAREER CITY title — anchored at the very top of the map with a small
+    // background pill so it never visually bleeds into building labels below.
+    // Study Hall building label renders at world-y≈72; this title stays at y=10
+    // with font 14px — its bottom edge is at y≈17, well clear of y=72.
+    const cityTitle = this.add
+      .text(MAP_WIDTH / 2, 10, "✦ CAREER CITY ✦", {
         fontFamily: FONT,
-        fontSize: "20px",
+        fontSize: "14px",
         color: "#39ff14",
         stroke: "#000000",
-        strokeThickness: 5,
+        strokeThickness: 3,
         fontStyle: "bold",
+        backgroundColor: "#00000066",
+        padding: { x: 8, y: 3 },
       })
       .setOrigin(0.5, 0.5)
       .setDepth(22);
+    cityTitle.setResolution(window.devicePixelRatio || 1);
 
     const districts = [
-      { x: 300, y: 70, text: "PARK\nDISTRICT", color: "#56c25e" },
-      { x: 1260, y: 70, text: "BUSINESS\nDISTRICT", color: "#39ff14" },
-      { x: 180, y: 350, text: "WEST\nQUARTER", color: "#ffbf00" },
-      { x: 450, y: 1050, text: "SERVICE\nLANE", color: "#00ffff" },
+      { x: 300, y: 70, text: "PARK\nDISTRICT" },
+      { x: 1260, y: 70, text: "BUSINESS\nDISTRICT" },
+      { x: 120, y: 350, text: "WEST\nQUARTER" },
+      // Career Row — pushed further left/down away from any tree props
+      { x: 140, y: 1020, text: "CAREER\nROW" },
     ];
 
     for (const d of districts) {
-      this.add
+      const label = this.add
         .text(d.x, d.y, d.text, {
           fontFamily: FONT,
-          fontSize: "12px",
-          color: d.color,
+          fontSize: "20px",
+          color: "#FFFFFF",
           align: "center",
           stroke: "#000000",
           strokeThickness: 3,
@@ -429,7 +469,8 @@ export class CareerCityScene extends Phaser.Scene {
         })
         .setOrigin(0.5, 0.5)
         .setDepth(4)
-        .setAlpha(0.85);
+        .setAlpha(0.95);
+      label.setResolution(window.devicePixelRatio || 1);
     }
   }
 
@@ -470,6 +511,86 @@ export class CareerCityScene extends Phaser.Scene {
     this.input.keyboard!.on("keydown-E", () => this.tryInteract());
     this.input.keyboard!.on("keydown-ENTER", () => this.tryInteract());
     this.input.keyboard!.on("keydown-SPACE", () => this.tryInteract());
+
+    // ── Click-and-drag camera panning (desktop/mouse only) ──────────────
+    this.input.on(
+      Phaser.Input.Events.POINTER_DOWN,
+      (pointer: Phaser.Input.Pointer) => {
+        // Only start drag on left mouse button (button 0), not touch
+        if (!pointer.isDown || pointer.button !== 0) return;
+        this.isDragging = true;
+        this.hasDraggedBeyondThreshold = false;
+        this.dragStartX = pointer.x;
+        this.dragStartY = pointer.y;
+        this.cameraScrollXAtDragStart = this.cameras.main.scrollX;
+        this.cameraScrollYAtDragStart = this.cameras.main.scrollY;
+        // Do NOT call stopFollow here — we only stop it once the pointer has
+        // actually moved enough to confirm this is a real drag, not just a click.
+      },
+    );
+
+    this.input.on(
+      Phaser.Input.Events.POINTER_MOVE,
+      (pointer: Phaser.Input.Pointer) => {
+        if (!this.isDragging) return;
+        const dx = pointer.x - this.dragStartX;
+        const dy = pointer.y - this.dragStartY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        // Start panning only after moving > 6px (avoids treating clicks as drags)
+        if (!this.hasDraggedBeyondThreshold) {
+          if (dist < 6) return;
+          this.hasDraggedBeyondThreshold = true;
+          // Now it's a real drag — stop following the player
+          this.cameras.main.stopFollow();
+        }
+
+        const cam = this.cameras.main;
+        cam.setScroll(
+          this.cameraScrollXAtDragStart - dx,
+          this.cameraScrollYAtDragStart - dy,
+        );
+      },
+    );
+
+    const endDrag = (pointer: Phaser.Input.Pointer) => {
+      if (!this.isDragging) return;
+      this.isDragging = false;
+
+      if (!this.hasDraggedBeyondThreshold) {
+        // This was just a click, not a drag — restore follow immediately
+        this.hasDraggedBeyondThreshold = false;
+        return;
+      }
+
+      this.hasDraggedBeyondThreshold = false;
+
+      // Commit the final drag position — camera stays exactly here.
+      // Follow is re-enabled in update() the first time the player moves after a drag.
+      const dx = pointer.x - this.dragStartX;
+      const dy = pointer.y - this.dragStartY;
+      const cam = this.cameras.main;
+      const finalX = this.cameraScrollXAtDragStart - dx;
+      const finalY = this.cameraScrollYAtDragStart - dy;
+      // Clamp to map bounds
+      const maxScrollX = MAP_WIDTH - cam.width / cam.zoom;
+      const maxScrollY = MAP_HEIGHT - cam.height / cam.zoom;
+      cam.setScroll(
+        Math.max(0, Math.min(finalX, maxScrollX)),
+        Math.max(0, Math.min(finalY, maxScrollY)),
+      );
+      // Mark that we are in "free pan" mode — update() will restart follow on next player move
+      this.isCameraFreeAfterDrag = true;
+    };
+
+    this.input.on(
+      Phaser.Input.Events.POINTER_UP,
+      (pointer: Phaser.Input.Pointer) => endDrag(pointer),
+    );
+    this.input.on(
+      Phaser.Input.Events.POINTER_UP_OUTSIDE,
+      (pointer: Phaser.Input.Pointer) => endDrag(pointer),
+    );
   }
 
   private setupTouchEvents(): void {
@@ -478,6 +599,11 @@ export class CareerCityScene extends Phaser.Scene {
         direction: string;
         pressed: boolean;
       };
+      // Re-enable camera follow on touch movement after a free-pan drag
+      if (pressed && this.isCameraFreeAfterDrag) {
+        this.isCameraFreeAfterDrag = false;
+        this.cameras.main.startFollow(this.player, true, 0.09, 0.09);
+      }
       if (direction === "up") this.player.setMoveUp(pressed);
       if (direction === "down") this.player.setMoveDown(pressed);
       if (direction === "left") this.player.setMoveLeft(pressed);
@@ -546,20 +672,20 @@ export class CareerCityScene extends Phaser.Scene {
 
     const bubbleW = 230;
     const bubbleH = 76;
-    const colorHex = `#${npc.config.color.toString(16).padStart(6, "0")}`;
 
     const bg = this.add.rectangle(0, 0, bubbleW, bubbleH, 0x000000, 0.96);
     bg.setStrokeStyle(3, npc.config.color, 1);
 
     const txt = this.add.text(0, -4, text.split("\n"), {
       fontFamily: FONT,
-      fontSize: "11px",
-      color: colorHex,
+      fontSize: "17px",
+      color: "#ffffff",
       align: "center",
       lineSpacing: 6,
       wordWrap: { width: bubbleW - 20 },
     });
     txt.setOrigin(0.5, 0.5);
+    txt.setResolution(window.devicePixelRatio || 1);
 
     const tail = this.add.triangle(
       0,
@@ -679,11 +805,12 @@ export class CareerCityScene extends Phaser.Scene {
   };
 
   handleInteriorExit = (e: Event): void => {
-    const { exitX, exitY } = (e as CustomEvent).detail as {
+    const { exitX, exitY, fastTravelTo } = (e as CustomEvent).detail as {
       exitX?: number;
       exitY?: number;
+      fastTravelTo?: NPCKey;
     };
-    this.handleWake({ exitX, exitY });
+    this.handleWake({ exitX, exitY, fastTravelTo });
   };
 
   // ── UPDATE ────────────────────────────────────────────────────────────────────
@@ -693,6 +820,12 @@ export class CareerCityScene extends Phaser.Scene {
     const down = this.cursors.down.isDown || this.wasdKeys.S.isDown;
     const left = this.cursors.left.isDown || this.wasdKeys.A.isDown;
     const right = this.cursors.right.isDown || this.wasdKeys.D.isDown;
+
+    // Re-enable camera follow on first player movement after a free-pan drag
+    if (this.isCameraFreeAfterDrag && (up || down || left || right)) {
+      this.isCameraFreeAfterDrag = false;
+      this.cameras.main.startFollow(this.player, true, 0.09, 0.09);
+    }
 
     this.player.setMoveUp(up);
     this.player.setMoveDown(down);

@@ -32,7 +32,7 @@ export function RetroHeader() {
                 (userProfile.name ||
                   userProfile.displayName ||
                   userProfile.username) && (
-                  <p className="font-press-start text-neon-cyan text-[8px] mt-1">
+                  <p className="font-press-start text-neon-cyan text-[0.6em] mt-1">
                     PLAYER:{" "}
                     {(
                       userProfile.name ||
@@ -49,7 +49,7 @@ export function RetroHeader() {
             onClick={handleLogout}
             variant="outline"
             size="sm"
-            className="retro-button bg-black border-2 border-neon-magenta text-neon-magenta hover:bg-neon-magenta hover:text-black font-press-start text-[8px] touch-target"
+            className="retro-button bg-black border-2 border-neon-magenta text-neon-magenta hover:bg-neon-magenta hover:text-black font-press-start text-[0.6em] touch-target"
           >
             <LogOut className="w-3 h-3 mr-2" />
             LOGOUT

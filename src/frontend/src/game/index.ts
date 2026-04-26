@@ -11,13 +11,31 @@ import {
 } from "./scenes/InteriorScenes";
 import { SCENE_KEYS } from "./utils/Constants";
 
+/**
+ * Creates the Phaser game config.
+ *
+ * @param parent       - DOM id of the container element
+ * @param navBarHeight - height of the top nav bar in px
+ * @param bottomBarHeight - height of the bottom HUD bar in px
+ * @param canvasWidth  - explicit canvas width (defaults to window.innerWidth)
+ * @param canvasHeight - explicit canvas height (defaults to available height)
+ */
 export function createPhaserConfig(
   parent: string,
+  navBarHeight = 52,
+  bottomBarHeight = 56,
+  canvasWidth?: number,
+  canvasHeight?: number,
 ): Phaser.Types.Core.GameConfig {
+  const w = canvasWidth ?? window.innerWidth;
+  const h =
+    canvasHeight ??
+    Math.max(100, window.innerHeight - navBarHeight - bottomBarHeight);
+
   return {
     type: Phaser.AUTO,
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: w,
+    height: h,
     parent,
     backgroundColor: "#000000",
     scene: [
@@ -40,8 +58,8 @@ export function createPhaserConfig(
     scale: {
       mode: Phaser.Scale.RESIZE,
       autoCenter: Phaser.Scale.NO_CENTER,
-      width: window.innerWidth,
-      height: window.innerHeight,
+      width: w,
+      height: h,
       parent,
     },
     render: {

@@ -35,10 +35,8 @@ export function MusicHUD() {
   return (
     <div
       style={{
-        position: "absolute",
-        bottom: "16px",
-        right: "12px",
-        zIndex: 300,
+        position: "relative",
+        zIndex: 0,
         display: "flex",
         alignItems: "center",
         gap: "8px",
@@ -57,7 +55,7 @@ export function MusicHUD() {
     >
       <span
         style={{
-          fontSize: "14px",
+          fontSize: "1em",
           animation:
             track.muted || !track.name ? "none" : "notePulse 1.2s infinite",
           display: "inline-block",
@@ -70,7 +68,7 @@ export function MusicHUD() {
       </span>
       <span
         style={{
-          fontSize: "8px",
+          fontSize: "0.6em",
           color: track.muted ? "#666" : "#ffbf00",
           flex: 1,
           overflow: "hidden",
@@ -95,7 +93,7 @@ export function MusicHUD() {
           background: "none",
           border: "none",
           cursor: "pointer",
-          fontSize: "14px",
+          fontSize: "1em",
           padding: "0",
           lineHeight: 1,
           flexShrink: 0,
@@ -116,7 +114,7 @@ export function MusicHUD() {
           background: "none",
           border: "none",
           cursor: "pointer",
-          fontSize: "10px",
+          fontSize: "0.7em",
           padding: "0",
           lineHeight: 1,
           flexShrink: 0,

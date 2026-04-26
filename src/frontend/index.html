@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
     <title>Job Quest — Retro Career RPG</title>
     <meta name="description" content="Gamified AI-powered career prep. Walk Career City, interact with AI agents, land your job." />
     <meta property="og:title" content="Job Quest — Retro Career RPG" />
@@ -11,6 +11,18 @@
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <style>
+      /* Prevent any bounce / overscroll on mobile that could show white edges */
+      html, body {
+        overflow: hidden;
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        background: #000;
+        touch-action: none;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>

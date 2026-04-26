@@ -134,7 +134,7 @@ export function RetroWorkflow({
               value={getStageProgress()}
               className="h-4 retro-progress"
             />
-            <div className="flex justify-between font-press-start text-[8px] text-neon-green">
+            <div className="flex justify-between font-press-start text-[0.6em] text-neon-green">
               <span
                 className={
                   workflowState.completedStages.includes("api-key")
@@ -272,7 +272,7 @@ export function RetroWorkflow({
       {/* Footer */}
       <footer className="border-t-4 border-neon-green bg-black mt-16 py-6">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-center gap-2 font-press-start text-[8px] text-neon-green">
+          <div className="flex items-center justify-center gap-2 font-press-start text-[0.6em] text-neon-green">
             <span>© 2025 BUILT WITH</span>
             <Heart className="w-3 h-3 text-neon-magenta fill-current animate-pulse" />
             <span>USING</span>

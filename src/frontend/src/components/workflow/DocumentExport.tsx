@@ -72,14 +72,14 @@ export function DocumentExport({ agentResults, onBack }: DocumentExportProps) {
         <CardTitle className="font-press-start text-neon-green text-lg">
           STAGE 5: DOCUMENT EXPORT
         </CardTitle>
-        <CardDescription className="font-press-start text-neon-cyan text-[8px] mt-2">
+        <CardDescription className="font-press-start text-neon-cyan text-[0.6em] mt-2">
           DOWNLOAD YOUR COMPLETED DOCUMENTS
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <Alert className="retro-alert border-2 border-neon-green bg-black">
           <CheckCircle className="h-4 w-4 text-neon-green" />
-          <AlertDescription className="font-press-start text-neon-green text-[8px] leading-relaxed">
+          <AlertDescription className="font-press-start text-neon-green text-[0.6em] leading-relaxed">
             ALL AGENTS COMPLETE! DOCUMENTS READY FOR EXPORT
           </AlertDescription>
         </Alert>
@@ -102,7 +102,7 @@ export function DocumentExport({ agentResults, onBack }: DocumentExportProps) {
                 exportDocument(agentResults.resumeTailor, "resume-branded.txt")
               }
               disabled={!agentResults.resumeTailor}
-              className="w-full retro-button bg-neon-green text-black hover:bg-neon-cyan font-press-start text-[8px] py-3"
+              className="w-full retro-button bg-neon-green text-black hover:bg-neon-cyan font-press-start text-[0.6em] py-3"
             >
               <Download className="w-3 h-3 mr-2" />
               DOWNLOAD
@@ -129,7 +129,7 @@ export function DocumentExport({ agentResults, onBack }: DocumentExportProps) {
                 )
               }
               disabled={!agentResults.coverLetterBuilder}
-              className="w-full retro-button bg-neon-magenta text-black hover:bg-neon-cyan font-press-start text-[8px] py-3"
+              className="w-full retro-button bg-neon-magenta text-black hover:bg-neon-cyan font-press-start text-[0.6em] py-3"
             >
               <Download className="w-3 h-3 mr-2" />
               DOWNLOAD
@@ -152,7 +152,7 @@ export function DocumentExport({ agentResults, onBack }: DocumentExportProps) {
                 )
               }
               disabled={!agentResults.brandQualityFinisher}
-              className="w-full retro-button bg-neon-cyan text-black hover:bg-neon-amber font-press-start text-[8px] py-3"
+              className="w-full retro-button bg-neon-cyan text-black hover:bg-neon-amber font-press-start text-[0.6em] py-3"
             >
               <Download className="w-3 h-3 mr-2" />
               DOWNLOAD
@@ -169,7 +169,7 @@ export function DocumentExport({ agentResults, onBack }: DocumentExportProps) {
             <Button
               onClick={handleExportAll}
               disabled={isExporting}
-              className="w-full retro-button bg-neon-amber text-black hover:bg-neon-green font-press-start text-[8px] py-3"
+              className="w-full retro-button bg-neon-amber text-black hover:bg-neon-green font-press-start text-[0.6em] py-3"
             >
               {isExporting ? (
                 <>

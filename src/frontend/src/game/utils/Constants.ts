@@ -68,6 +68,8 @@ export interface NPCConfig {
   x: number;
   y: number;
   color: number;
+  /** Accessible text color for use on dark backgrounds — always bright/light */
+  textColor: string;
   dialogues: string[];
   xpReward: number;
   workflowId: string;
@@ -82,6 +84,7 @@ export const NPC_CONFIGS: NPCConfig[] = [
     x: 1150,
     y: 300,
     color: COLORS.NEON_GREEN,
+    textColor: "#39ff14",
     dialogues: [
       "Another job description?\nYou're brave.",
       "Let me guess — it says\n'fast-paced environment.'",
@@ -98,6 +101,7 @@ export const NPC_CONFIGS: NPCConfig[] = [
     x: 1150,
     y: 550,
     color: COLORS.NEON_MAGENTA,
+    textColor: "#ff66ff",
     dialogues: [
       "Let me guess — your resume\nsays 'team player.'",
       "Results-oriented professional.\nAren't we all.",
@@ -114,6 +118,7 @@ export const NPC_CONFIGS: NPCConfig[] = [
     x: 450,
     y: 950,
     color: COLORS.NEON_CYAN,
+    textColor: "#00ffff",
     dialogues: [
       "Cover letters: because emails\nweren't painful enough.",
       "I'll write it. You'll edit it.\nWe'll both pretend it's perfect.",
@@ -130,6 +135,7 @@ export const NPC_CONFIGS: NPCConfig[] = [
     x: 350,
     y: 400,
     color: COLORS.NEON_AMBER,
+    textColor: "#ffbf00",
     dialogues: [
       "Deep breaths. They're just\npeople. Stressed, overworked\npeople.",
       "Tell me about yourself.\nBut like, in 2 minutes.",
@@ -146,6 +152,7 @@ export const NPC_CONFIGS: NPCConfig[] = [
     x: 800,
     y: 200,
     color: COLORS.NEON_GREEN,
+    textColor: "#39ff14",
     dialogues: [
       "Flashcards. The adult version\nof hoping for a miracle.",
       "Notes won't write themselves.\nWell, actually...",

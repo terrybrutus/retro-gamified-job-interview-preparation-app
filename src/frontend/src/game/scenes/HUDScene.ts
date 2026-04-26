@@ -1,30 +1,31 @@
+/**
+ * HUDScene — Pure event relay layer. No Phaser-drawn visuals.
+ *
+ * All HUD visuals (XP bar, level badge, music player) live in the React
+ * BottomHUD component inside GameContainer.tsx. That component is always
+ * present in the DOM regardless of which Phaser scene is active, so it
+ * never disappears when transitioning between Career City and building interiors.
+ *
+ * HUDScene's only job is:
+ *   1. Track totalXP state so it survives scene transitions
+ *   2. Dispatch `hud:xpUpdate` window events that React BottomHUD listens to
+ *   3. Show the floating "+XP" flash text (rendered on canvas, acceptable in all scenes)
+ *   4. Show the NPC name prompt at the top of the screen
+ */
+
 import Phaser from "phaser";
 import {
   CAREER_LEVEL_FORMULA,
-  COLORS,
   GAME_EVENTS,
   SCENE_KEYS,
 } from "../utils/Constants";
 import type { NPCConfig } from "../utils/Constants";
 
 const FONT = "Orbitron, sans-serif";
-const XP_PER_LEVEL_BASE = 100;
-
-function xpForNextLevel(level: number): number {
-  return (level + 1) * (level + 1) * XP_PER_LEVEL_BASE;
-}
 
 export class HUDScene extends Phaser.Scene {
-  private xpText!: Phaser.GameObjects.Text;
-  private levelText!: Phaser.GameObjects.Text;
-  private xpBarBg!: Phaser.GameObjects.Rectangle;
-  private xpBar!: Phaser.GameObjects.Rectangle;
-  private barGlow!: Phaser.GameObjects.Rectangle;
   private npcNameText!: Phaser.GameObjects.Text;
-  private minimapBtn!: Phaser.GameObjects.Container;
   private xpFlash!: Phaser.GameObjects.Text;
-  private barX = 0;
-  private barW = 0;
 
   private totalXP = 0;
   private careerLevel = 0;
@@ -35,174 +36,41 @@ export class HUDScene extends Phaser.Scene {
 
   create(): void {
     const { width, height } = this.scale;
-    this.buildHUDBottom(width, height);
-    this.buildMinimapButton(width);
     this.buildNPCNameDisplay(width);
     this.buildXPFlash(width, height);
     this.setupEventListeners();
   }
 
-  buildHUDBottom(width: number, height: number): void {
-    const hudH = 58;
-
-    const hudBg = this.add.rectangle(
-      width / 2,
-      height - hudH / 2,
-      width,
-      hudH,
-      0x000000,
-      0.94,
-    );
-    hudBg.setStrokeStyle(3, COLORS.NEON_GREEN, 1);
-    hudBg.setDepth(90);
-
-    const accent = this.add.rectangle(
-      width / 2,
-      height - hudH,
-      width,
-      1,
-      COLORS.NEON_GREEN,
-      0.3,
-    );
-    accent.setDepth(90);
-
-    const levelBadge = this.add.rectangle(
-      70,
-      height - hudH / 2,
-      110,
-      38,
-      0x0a1a0a,
-      1,
-    );
-    levelBadge.setStrokeStyle(2, COLORS.NEON_GREEN, 0.8);
-    levelBadge.setDepth(91);
-
-    this.levelText = this.add.text(70, height - hudH / 2 - 8, "LEVEL 0", {
-      fontFamily: FONT,
-      fontSize: "11px",
-      color: "#39ff14",
-      fontStyle: "bold",
-    });
-    this.levelText.setOrigin(0.5, 0.5).setDepth(92);
-
-    this.xpText = this.add.text(70, height - hudH / 2 + 10, "XP: 0", {
-      fontFamily: FONT,
-      fontSize: "9px",
-      color: "#00ffff",
-    });
-    this.xpText.setOrigin(0.5, 0.5).setDepth(92);
-
-    const barPad = 140;
-    this.barX = barPad;
-    this.barW = width - barPad - 200;
-    const barY = height - hudH / 2;
-
-    this.add
-      .text(barPad, barY - 14, "XP", {
-        fontFamily: FONT,
-        fontSize: "8px",
-        color: "#39ff1466",
-      })
-      .setDepth(91);
-
-    this.xpBarBg = this.add.rectangle(
-      this.barX + this.barW / 2,
-      barY,
-      this.barW,
-      14,
-      0x0a0a0a,
-      1,
-    );
-    this.xpBarBg.setStrokeStyle(1, COLORS.NEON_GREEN, 0.5);
-    this.xpBarBg.setDepth(91);
-
-    this.xpBar = this.add.rectangle(
-      this.barX,
-      barY,
-      0,
-      10,
-      COLORS.NEON_GREEN,
-      1,
-    );
-    this.xpBar.setOrigin(0, 0.5).setDepth(92);
-
-    this.barGlow = this.add.rectangle(
-      this.barX,
-      barY,
-      0,
-      10,
-      COLORS.NEON_GREEN,
-      0.25,
-    );
-    this.barGlow.setOrigin(0, 0.5).setDepth(91);
-    this.barGlow.setBlendMode(Phaser.BlendModes.ADD);
-
-    this.add
-      .text(width / 2, height - hudH + 8, "◆ CAREER CITY ◆", {
-        fontFamily: FONT,
-        fontSize: "7px",
-        color: "#39ff1433",
-        align: "center",
-      })
-      .setOrigin(0.5, 0)
-      .setDepth(90);
-  }
-
-  buildMinimapButton(width: number): void {
-    const bg = this.add.rectangle(0, 0, 114, 34, 0x001a1a, 0.95);
-    bg.setStrokeStyle(2, COLORS.NEON_CYAN, 1);
-
-    const label = this.add.text(0, 0, "[ MAP ]", {
-      fontFamily: FONT,
-      fontSize: "10px",
-      color: "#00ffff",
-      fontStyle: "bold",
-    });
-    label.setOrigin(0.5, 0.5);
-
-    this.minimapBtn = this.add.container(width - 80, 24, [bg, label]);
-    this.minimapBtn.setDepth(91);
-    this.minimapBtn.setInteractive(
-      new Phaser.Geom.Rectangle(-57, -17, 114, 34),
-      Phaser.Geom.Rectangle.Contains,
-    );
-    this.minimapBtn.on("pointerover", () => {
-      bg.setStrokeStyle(2, COLORS.NEON_AMBER, 1);
-      label.setColor("#ffbf00");
-    });
-    this.minimapBtn.on("pointerout", () => {
-      bg.setStrokeStyle(2, COLORS.NEON_CYAN, 1);
-      label.setColor("#00ffff");
-    });
-    this.minimapBtn.on("pointerdown", () => {
-      window.dispatchEvent(new CustomEvent(GAME_EVENTS.MINIMAP_TOGGLE));
-    });
-  }
-
   private buildNPCNameDisplay(width: number): void {
     this.npcNameText = this.add.text(width / 2, 32, "", {
       fontFamily: FONT,
-      fontSize: "12px",
+      fontSize: "16px",
       color: "#ffbf00",
       backgroundColor: "#000000ee",
       padding: { x: 10, y: 5 },
       stroke: "#000000",
-      strokeThickness: 2,
+      strokeThickness: 1,
       fontStyle: "bold",
     });
     this.npcNameText.setOrigin(0.5, 0.5).setDepth(91).setVisible(false);
+    this.npcNameText.setResolution(window.devicePixelRatio || 1);
+    // NPC name is a UI overlay — it should not scroll with the world
+    this.npcNameText.setScrollFactor(0);
   }
 
   buildXPFlash(width: number, height: number): void {
     this.xpFlash = this.add.text(width / 2, height - 80, "", {
       fontFamily: FONT,
-      fontSize: "14px",
+      fontSize: "20px",
       color: "#39ff14",
       stroke: "#000000",
-      strokeThickness: 4,
+      strokeThickness: 2,
       fontStyle: "bold",
     });
     this.xpFlash.setOrigin(0.5, 0.5).setDepth(95).setAlpha(0);
+    this.xpFlash.setResolution(window.devicePixelRatio || 1);
+    // XP flash is a screen-space overlay
+    this.xpFlash.setScrollFactor(0);
   }
 
   private setupEventListeners(): void {
@@ -233,51 +101,36 @@ export class HUDScene extends Phaser.Scene {
     window.addEventListener("hud:setXP", (e: Event) => {
       const { xp } = (e as CustomEvent).detail as { xp: number };
       this.totalXP = xp;
-      this.updateXPDisplay();
+      this.careerLevel = CAREER_LEVEL_FORMULA(xp);
+      this.notifyReact();
     });
   }
 
   private addXP(amount: number, reason: string): void {
     this.totalXP += amount;
-    this.updateXPDisplay();
+    this.careerLevel = CAREER_LEVEL_FORMULA(this.totalXP);
+    this.notifyReact();
     this.showXPFlash(amount, reason);
   }
 
+  /** Dispatch window event so React BottomHUD updates */
+  private notifyReact(): void {
+    window.dispatchEvent(
+      new CustomEvent("hud:xpUpdate", {
+        detail: { xp: this.totalXP, level: this.careerLevel },
+      }),
+    );
+  }
+
+  // Public API kept for compatibility
   updateXP(xp: number): void {
     this.totalXP = xp;
-    this.updateXPDisplay();
+    this.careerLevel = CAREER_LEVEL_FORMULA(xp);
+    this.notifyReact();
   }
 
   updateLevel(_level: number): void {
-    // level is derived from XP
-  }
-
-  private updateXPDisplay(): void {
-    this.careerLevel = CAREER_LEVEL_FORMULA(this.totalXP);
-    const nextLevelXP = xpForNextLevel(this.careerLevel);
-    const prevLevelXP =
-      this.careerLevel > 0 ? xpForNextLevel(this.careerLevel - 1) : 0;
-    const progress = Math.min(
-      (this.totalXP - prevLevelXP) / (nextLevelXP - prevLevelXP),
-      1,
-    );
-
-    this.levelText.setText(`LEVEL ${this.careerLevel}`);
-    this.xpText.setText(`XP: ${this.totalXP}`);
-
-    const newWidth = Math.max(0, this.barW * progress);
-    this.tweens.add({
-      targets: this.xpBar,
-      width: newWidth,
-      duration: 600,
-      ease: "Power2",
-    });
-    this.tweens.add({
-      targets: this.barGlow,
-      width: newWidth,
-      duration: 600,
-      ease: "Power2",
-    });
+    // level is derived from XP — no-op
   }
 
   private showXPFlash(amount: number, reason: string): void {

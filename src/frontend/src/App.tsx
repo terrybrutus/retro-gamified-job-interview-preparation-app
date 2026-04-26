@@ -52,7 +52,7 @@ function App() {
             color: "#39FF14",
             border: "2px solid #39FF14",
             fontFamily: '"Press Start 2P", monospace',
-            fontSize: "10px",
+            fontSize: "0.7em",
           },
         }}
       />

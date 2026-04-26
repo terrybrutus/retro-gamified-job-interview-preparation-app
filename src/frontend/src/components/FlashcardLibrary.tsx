@@ -90,7 +90,9 @@ export function FlashcardLibrary() {
 
   return (
     <div style={{ padding: "20px", fontFamily: '"Press Start 2P", monospace' }}>
-      <h2 style={{ color: "#39ff14", fontSize: "12px", marginBottom: "20px" }}>
+      <h2
+        style={{ color: "#39ff14", fontSize: "0.85em", marginBottom: "20px" }}
+      >
         📚 FLASHCARDS
       </h2>
 
@@ -115,7 +117,7 @@ export function FlashcardLibrary() {
             data-ocid={`flashcard.filter.${cat}`}
             style={{
               fontFamily: '"Press Start 2P", monospace',
-              fontSize: "7px",
+              fontSize: "0.55em",
               color: filter === cat ? "#000" : "#39ff14",
               background: filter === cat ? "#39ff14" : "transparent",
               border: "2px solid #39ff14",
@@ -129,7 +131,7 @@ export function FlashcardLibrary() {
       </div>
 
       {/* Progress */}
-      <p style={{ color: "#666", fontSize: "7px", marginBottom: "16px" }}>
+      <p style={{ color: "#666", fontSize: "0.55em", marginBottom: "16px" }}>
         CARD {(currentIndex % filtered.length) + 1} / {filtered.length}
       </p>
 
@@ -156,7 +158,7 @@ export function FlashcardLibrary() {
       >
         <p
           style={{
-            fontSize: "7px",
+            fontSize: "0.55em",
             color: flipped ? "#00ffff" : "#39ff14",
             marginBottom: "8px",
           }}
@@ -165,21 +167,21 @@ export function FlashcardLibrary() {
         </p>
         <p
           style={{
-            fontSize: "9px",
+            fontSize: "0.65em",
             color: flipped ? "#aaffff" : "#aaffaa",
             lineHeight: "1.8",
           }}
         >
           {flipped ? current.answer : current.question}
         </p>
-        <p style={{ fontSize: "6px", color: "#555", marginTop: "12px" }}>
+        <p style={{ fontSize: "0.5em", color: "#555", marginTop: "12px" }}>
           {current.category.toUpperCase()}
         </p>
       </button>
 
       <p
         style={{
-          fontSize: "7px",
+          fontSize: "0.55em",
           color: "#444",
           marginBottom: "16px",
           textAlign: "center",
@@ -196,7 +198,7 @@ export function FlashcardLibrary() {
           data-ocid="flashcard.prev"
           style={{
             fontFamily: '"Press Start 2P", monospace',
-            fontSize: "8px",
+            fontSize: "0.6em",
             color: "#ff00ff",
             background: "transparent",
             border: "2px solid #ff00ff",
@@ -212,7 +214,7 @@ export function FlashcardLibrary() {
           data-ocid="flashcard.next"
           style={{
             fontFamily: '"Press Start 2P", monospace',
-            fontSize: "8px",
+            fontSize: "0.6em",
             color: "#39ff14",
             background: "transparent",
             border: "2px solid #39ff14",

@@ -87,7 +87,7 @@ export function ApiKeyConfig({ onComplete, savedApiKey }: ApiKeyConfigProps) {
             <CardTitle className="font-press-start text-neon-green text-lg">
               STAGE 1: API KEY CONFIG
             </CardTitle>
-            <CardDescription className="font-press-start text-neon-cyan text-[8px] mt-2">
+            <CardDescription className="font-press-start text-neon-cyan text-[0.6em] mt-2">
               CONFIGURE GEMINI API ACCESS
             </CardDescription>
           </div>
@@ -96,7 +96,7 @@ export function ApiKeyConfig({ onComplete, savedApiKey }: ApiKeyConfigProps) {
       <CardContent className="space-y-6">
         <Alert className="retro-alert border-2 border-neon-cyan bg-black">
           <Sparkles className="h-4 w-4 text-neon-cyan" />
-          <AlertDescription className="font-press-start text-neon-cyan text-[8px] leading-relaxed">
+          <AlertDescription className="font-press-start text-neon-cyan text-[0.6em] leading-relaxed">
             ENTER YOUR GEMINI API KEY TO POWER THE AI AGENTS
           </AlertDescription>
         </Alert>
@@ -123,7 +123,7 @@ export function ApiKeyConfig({ onComplete, savedApiKey }: ApiKeyConfigProps) {
           {validationError && (
             <Alert className="retro-alert border-2 border-neon-magenta bg-black">
               <AlertTriangle className="h-4 w-4 text-neon-magenta" />
-              <AlertDescription className="font-press-start text-neon-magenta text-[8px]">
+              <AlertDescription className="font-press-start text-neon-magenta text-[0.6em]">
                 {validationError}
               </AlertDescription>
             </Alert>
@@ -132,7 +132,7 @@ export function ApiKeyConfig({ onComplete, savedApiKey }: ApiKeyConfigProps) {
           {availableModels.length > 0 && (
             <Alert className="retro-alert border-2 border-neon-green bg-black">
               <CheckCircle className="h-4 w-4 text-neon-green" />
-              <AlertDescription className="font-press-start text-neon-green text-[8px]">
+              <AlertDescription className="font-press-start text-neon-green text-[0.6em]">
                 {availableModels.length} MODELS DETECTED
               </AlertDescription>
             </Alert>

@@ -96,9 +96,9 @@ export function NPCModal({
             position: "absolute",
             top: "8px",
             right: "8px",
-            fontFamily: '"Press Start 2P", monospace',
-            fontSize: "10px",
-            color,
+            fontFamily: '"Orbitron", cursive',
+            fontSize: "0.85em",
+            color: "#ffffff",
             background: "transparent",
             border: `2px solid ${color}`,
             padding: "4px 8px",
@@ -128,7 +128,7 @@ export function NPCModal({
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "32px",
+              fontSize: "2em",
               flexShrink: 0,
             }}
           >
@@ -137,9 +137,9 @@ export function NPCModal({
           <div>
             <p
               style={{
-                fontFamily: '"Press Start 2P", monospace',
-                fontSize: "9px",
-                color: "#888",
+                fontFamily: '"Orbitron", cursive',
+                fontSize: "0.9em",
+                color: "#cccccc",
                 marginBottom: "6px",
               }}
             >
@@ -147,9 +147,9 @@ export function NPCModal({
             </p>
             <p
               style={{
-                fontFamily: '"Press Start 2P", monospace',
-                fontSize: "11px",
-                color,
+                fontFamily: '"Orbitron", cursive',
+                fontSize: "0.9em",
+                color: "#ffffff",
                 lineHeight: "1.6",
               }}
             >
@@ -161,9 +161,10 @@ export function NPCModal({
         {/* Dialogue box */}
         <div
           style={{
-            background: "#0a0a0a",
+            background: "#12122a",
             border: `2px solid ${color}`,
-            padding: "12px 16px",
+            boxShadow: `inset 0 0 20px ${color}18`,
+            padding: "14px 16px",
             marginBottom: "20px",
             position: "relative",
           }}
@@ -181,10 +182,10 @@ export function NPCModal({
           />
           <p
             style={{
-              fontFamily: '"Press Start 2P", monospace',
-              fontSize: "8px",
-              color: color,
-              lineHeight: "1.8",
+              fontFamily: '"Orbitron", cursive',
+              fontSize: "1em",
+              color: "#ffffff",
+              lineHeight: "2.0",
               margin: 0,
               whiteSpace: "pre-wrap",
             }}
@@ -205,8 +206,8 @@ export function NPCModal({
         >
           <span
             style={{
-              fontFamily: '"Press Start 2P", monospace',
-              fontSize: "7px",
+              fontFamily: '"Orbitron", cursive',
+              fontSize: "0.85em",
               color: "#ffbf00",
             }}
           >
@@ -223,8 +224,8 @@ export function NPCModal({
               data-ocid="npc_modal.primary_button"
               style={{
                 flex: 1,
-                fontFamily: '"Press Start 2P", monospace',
-                fontSize: "8px",
+                fontFamily: '"Orbitron", cursive',
+                fontSize: "0.85em",
                 color: "#000",
                 background: color,
                 border: `2px solid ${color}`,
@@ -240,11 +241,11 @@ export function NPCModal({
               onClick={onClose}
               data-ocid="npc_modal.cancel_button"
               style={{
-                fontFamily: '"Press Start 2P", monospace',
-                fontSize: "8px",
-                color: "#888",
+                fontFamily: '"Orbitron", cursive',
+                fontSize: "0.85em",
+                color: "#cccccc",
                 background: "transparent",
-                border: "2px solid #333",
+                border: "2px solid #555555",
                 padding: "10px 12px",
                 cursor: "pointer",
               }}
@@ -256,9 +257,9 @@ export function NPCModal({
           <div>
             <p
               style={{
-                fontFamily: '"Press Start 2P", monospace',
-                fontSize: "7px",
-                color: "#888",
+                fontFamily: '"Orbitron", cursive',
+                fontSize: "0.85em",
+                color: "#dddddd",
                 marginBottom: "12px",
               }}
             >
@@ -271,8 +272,8 @@ export function NPCModal({
                 data-ocid="npc_modal.confirm_button"
                 style={{
                   flex: 1,
-                  fontFamily: '"Press Start 2P", monospace',
-                  fontSize: "8px",
+                  fontFamily: '"Orbitron", cursive',
+                  fontSize: "0.85em",
                   color: "#000",
                   background: color,
                   border: `2px solid ${color}`,
@@ -287,11 +288,11 @@ export function NPCModal({
                 onClick={() => setShowConfirm(false)}
                 data-ocid="npc_modal.back_button"
                 style={{
-                  fontFamily: '"Press Start 2P", monospace',
-                  fontSize: "8px",
-                  color: "#888",
+                  fontFamily: '"Orbitron", cursive',
+                  fontSize: "0.85em",
+                  color: "#cccccc",
                   background: "transparent",
-                  border: "2px solid #333",
+                  border: "2px solid #555555",
                   padding: "10px 12px",
                   cursor: "pointer",
                 }}

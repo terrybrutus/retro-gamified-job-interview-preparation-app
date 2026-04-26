@@ -242,7 +242,7 @@ Write the cover letter now. Make it sound like a real, confident human wrote it.
         <CardTitle className="font-press-start text-neon-amber text-lg">
           STAGE 4: AGENT WORKFLOW
         </CardTitle>
-        <CardDescription className="font-press-start text-neon-cyan text-[8px] mt-2">
+        <CardDescription className="font-press-start text-neon-cyan text-[0.6em] mt-2">
           AI AGENTS PROCESSING YOUR APPLICATION
         </CardDescription>
       </CardHeader>
@@ -278,7 +278,7 @@ Write the cover letter now. Make it sound like a real, confident human wrote it.
                     >
                       {config.name}
                     </h3>
-                    <p className="font-press-start text-[8px] text-gray-400 mt-1">
+                    <p className="font-press-start text-[0.6em] text-gray-400 mt-1">
                       {isComplete
                         ? "COMPLETE"
                         : isCurrent
@@ -301,7 +301,7 @@ Write the cover letter now. Make it sound like a real, confident human wrote it.
         {error && (
           <Alert className="retro-alert border-2 border-neon-magenta bg-black">
             <AlertTriangle className="h-4 w-4 text-neon-magenta" />
-            <AlertDescription className="font-press-start text-neon-magenta text-[8px]">
+            <AlertDescription className="font-press-start text-neon-magenta text-[0.6em]">
               {error}
             </AlertDescription>
           </Alert>

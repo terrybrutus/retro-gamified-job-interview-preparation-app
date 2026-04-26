@@ -69,7 +69,6 @@ function TouchSwipeLayer() {
       touchStart.current = null;
     };
 
-    // Only bind on mobile canvas area
     document.addEventListener("touchstart", handleStart, { passive: true });
     document.addEventListener("touchmove", handleMove, { passive: true });
     document.addEventListener("touchend", handleEnd);
@@ -96,7 +95,6 @@ function TouchSwipeLayer() {
   // Double-tap to interact
   const lastTap = useRef(0);
   const handleTouchTap = useCallback((e: React.TouchEvent) => {
-    // Only trigger if minimal movement (a tap, not a swipe)
     const now = Date.now();
     if (now - lastTap.current < 300) {
       e.preventDefault();
@@ -111,7 +109,7 @@ function TouchSwipeLayer() {
         position: "absolute",
         inset: 0,
         zIndex: 10,
-        pointerEvents: "none", // pass-through for keyboard/mouse; touch events via document listeners
+        pointerEvents: "none",
       }}
       onTouchEnd={handleTouchTap}
       aria-hidden="true"
@@ -127,14 +125,12 @@ export function TouchControls() {
     right: false,
   });
 
-  const [menuOpen, setMenuOpen] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
 
   // First-visit tutorial
   useEffect(() => {
     const seen = localStorage.getItem(TUTORIAL_KEY);
     if (!seen) {
-      // Small delay so the game can load first
       const t = window.setTimeout(() => setShowTutorial(true), 1200);
       return () => clearTimeout(t);
     }
@@ -172,172 +168,18 @@ export function TouchControls() {
 
   const panelStyle: React.CSSProperties = {
     background: "#000",
-    border: "3px solid #39ff14",
-    boxShadow: "0 0 40px #39ff1444",
+    border: "3px solid #ffbf00",
+    boxShadow: "0 0 40px #ffbf0044",
     padding: "28px 32px",
     maxWidth: "420px",
     width: "90vw",
     fontFamily: "Orbitron, sans-serif",
   };
 
-  const h2Style: React.CSSProperties = {
-    fontFamily: "Orbitron, sans-serif",
-    fontSize: "15px",
-    color: "#39ff14",
-    marginBottom: "20px",
-    letterSpacing: "0.05em",
-    fontWeight: 700,
-  };
-
-  const controlsRows = [
-    { keys: "WASD / Arrow Keys", action: "Move around Career City" },
-    { keys: "E / Space / Enter", action: "Interact with NPCs" },
-    { keys: "ESC", action: "Exit building / Close dialogue" },
-    { keys: "Swipe (mobile)", action: "Move character" },
-    { keys: "Double-tap (mobile)", action: "Interact" },
-  ];
-
   return (
     <>
       {/* Invisible swipe layer for mobile movement */}
       <TouchSwipeLayer />
-
-      {/* Hamburger menu button — top-left, out of the way */}
-      <button
-        type="button"
-        onClick={() => setMenuOpen(true)}
-        aria-label="Open instructions menu"
-        data-ocid="game_menu.open_button"
-        style={{
-          position: "absolute",
-          top: "12px",
-          left: "12px",
-          zIndex: 300,
-          width: "44px",
-          height: "44px",
-          background: "rgba(0,0,0,0.88)",
-          border: "2px solid #39ff14",
-          boxShadow: "0 0 10px #39ff1444",
-          cursor: "pointer",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "5px",
-          borderRadius: "2px",
-        }}
-      >
-        {[0, 1, 2].map((i) => (
-          <span
-            key={i}
-            style={{
-              display: "block",
-              width: "18px",
-              height: "2px",
-              background: "#39ff14",
-              borderRadius: "1px",
-            }}
-          />
-        ))}
-      </button>
-
-      {/* Instructions menu overlay */}
-      {menuOpen && (
-        <dialog
-          open
-          style={{
-            ...overlayStyle,
-            background: "rgba(0,0,0,0.82)",
-            border: "none",
-            margin: 0,
-            padding: 0,
-            maxWidth: "none",
-            maxHeight: "none",
-            width: "100%",
-            height: "100%",
-          }}
-          aria-label="Instructions"
-          data-ocid="game_menu.dialog"
-        >
-          <div
-            style={panelStyle}
-            onClick={(e) => e.stopPropagation()}
-            onKeyDown={(e) => e.stopPropagation()}
-          >
-            <h2 style={h2Style}>☰ HOW TO PLAY</h2>
-            <table
-              style={{
-                width: "100%",
-                borderCollapse: "collapse",
-                marginBottom: "24px",
-              }}
-            >
-              <tbody>
-                {controlsRows.map((row) => (
-                  <tr key={row.keys}>
-                    <td
-                      style={{
-                        fontFamily: "Orbitron, sans-serif",
-                        fontSize: "10px",
-                        color: "#00ffff",
-                        padding: "6px 12px 6px 0",
-                        whiteSpace: "nowrap",
-                        fontWeight: 700,
-                        borderBottom: "1px solid #1a1a1a",
-                      }}
-                    >
-                      {row.keys}
-                    </td>
-                    <td
-                      style={{
-                        fontFamily: "Orbitron, sans-serif",
-                        fontSize: "10px",
-                        color: "#aaaaaa",
-                        padding: "6px 0",
-                        borderBottom: "1px solid #1a1a1a",
-                      }}
-                    >
-                      {row.action}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <p
-              style={{
-                fontFamily: "Orbitron, sans-serif",
-                fontSize: "10px",
-                color: "#555",
-                marginBottom: "20px",
-                lineHeight: 1.7,
-              }}
-            >
-              Walk up to any NPC building and press E to enter.
-              <br />
-              Open the <span style={{ color: "#00ffff" }}>[ MAP ]</span> to
-              fast-travel anywhere.
-            </p>
-            <button
-              type="button"
-              onClick={() => setMenuOpen(false)}
-              data-ocid="game_menu.close_button"
-              style={{
-                fontFamily: "Orbitron, sans-serif",
-                fontSize: "11px",
-                color: "#000",
-                background: "#39ff14",
-                border: "none",
-                padding: "10px 24px",
-                cursor: "pointer",
-                fontWeight: 700,
-                letterSpacing: "0.05em",
-              }}
-            >
-              ▶ GOT IT
-            </button>
-          </div>
-        </dialog>
-      )}
 
       {/* First-visit tutorial overlay */}
       {showTutorial && (
@@ -357,20 +199,23 @@ export function TouchControls() {
           aria-label="Welcome tutorial"
           data-ocid="tutorial.dialog"
         >
-          <div
-            style={{
-              ...panelStyle,
-              border: "3px solid #ffbf00",
-              boxShadow: "0 0 40px #ffbf0044",
-            }}
-          >
-            <h2 style={{ ...h2Style, color: "#ffbf00" }}>
+          <div style={panelStyle}>
+            <h2
+              style={{
+                fontFamily: "Orbitron, sans-serif",
+                fontSize: "1.05em",
+                color: "#ffbf00",
+                marginBottom: "20px",
+                letterSpacing: "0.05em",
+                fontWeight: 700,
+              }}
+            >
               ⭐ WELCOME TO CAREER CITY
             </h2>
             <p
               style={{
                 fontFamily: "Orbitron, sans-serif",
-                fontSize: "11px",
+                fontSize: "0.75em",
                 color: "#cccccc",
                 lineHeight: 1.8,
                 marginBottom: "16px",
@@ -381,7 +226,7 @@ export function TouchControls() {
             <p
               style={{
                 fontFamily: "Orbitron, sans-serif",
-                fontSize: "10px",
+                fontSize: "0.7em",
                 color: "#888",
                 lineHeight: 1.8,
                 marginBottom: "20px",
@@ -395,6 +240,7 @@ export function TouchControls() {
             <div style={{ marginBottom: "20px" }}>
               {[
                 { icon: "⌨️", text: "WASD or Arrow Keys to move" },
+                { icon: "🖱️", text: "Click and drag to pan the map" },
                 { icon: "🎮", text: "E / Space to interact with NPCs" },
                 { icon: "🗺️", text: "[ MAP ] button for fast travel" },
                 { icon: "📱", text: "Swipe on mobile to move" },
@@ -407,11 +253,11 @@ export function TouchControls() {
                     gap: "10px",
                     marginBottom: "8px",
                     fontFamily: "Orbitron, sans-serif",
-                    fontSize: "10px",
+                    fontSize: "0.7em",
                     color: "#aaaaaa",
                   }}
                 >
-                  <span style={{ fontSize: "16px", flexShrink: 0 }}>
+                  <span style={{ fontSize: "1.1em", flexShrink: 0 }}>
                     {tip.icon}
                   </span>
                   <span>{tip.text}</span>
@@ -424,7 +270,7 @@ export function TouchControls() {
               data-ocid="tutorial.start_button"
               style={{
                 fontFamily: "Orbitron, sans-serif",
-                fontSize: "11px",
+                fontSize: "0.75em",
                 color: "#000",
                 background: "#ffbf00",
                 border: "none",

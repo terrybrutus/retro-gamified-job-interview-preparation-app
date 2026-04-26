@@ -24,20 +24,21 @@ export class Player extends Phaser.GameObjects.Container {
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y);
 
-    this.shadowEllipse = scene.add.ellipse(0, 14, 16, 5, 0x000000, 0.3);
+    // Shadow and glow radii scaled up proportionally to match the 1.6× sprite
+    this.shadowEllipse = scene.add.ellipse(0, 22, 26, 8, 0x000000, 0.3);
     this.add(this.shadowEllipse);
 
     this.glowCircle = scene.add.arc(
       0,
       2,
-      18,
+      29,
       0,
       360,
       false,
       COLORS.NEON_GREEN,
       0,
     );
-    this.glowCircle.setStrokeStyle(1.5, COLORS.NEON_GREEN, 0.2);
+    this.glowCircle.setStrokeStyle(2, COLORS.NEON_GREEN, 0.2);
     this.add(this.glowCircle);
 
     // Build spritesheet from the generated "player-sheet" texture
@@ -45,6 +46,8 @@ export class Player extends Phaser.GameObjects.Container {
 
     this.sprite = scene.add.sprite(0, 2, "player-sheet-anim", 0);
     this.sprite.setOrigin(0.5, 0.5);
+    // Scale sprite 1.6× so the character is visibly larger relative to NPCs
+    this.sprite.setScale(1.6);
     this.add(this.sprite);
 
     this.createAnimations(scene);
@@ -53,8 +56,9 @@ export class Player extends Phaser.GameObjects.Container {
     scene.physics.add.existing(this);
 
     if (this.body) {
-      this.body.setSize(16, 14);
-      this.body.setOffset(-8, 4);
+      // Physics body scaled to match the 1.6× visual — ~1.6× original 16×14/offset -8,4
+      this.body.setSize(26, 22);
+      this.body.setOffset(-13, 6);
       this.body.setMaxVelocity(PLAYER_SPEED, PLAYER_SPEED);
       this.body.setCollideWorldBounds(true);
     }

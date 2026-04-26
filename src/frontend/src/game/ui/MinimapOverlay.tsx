@@ -112,8 +112,8 @@ export function MinimapOverlay({
           <div>
             <p
               style={{
-                fontFamily: '"Press Start 2P", monospace',
-                fontSize: "11px",
+                fontFamily: '"Orbitron", cursive',
+                fontSize: "0.85em",
                 color: "#39ff14",
                 margin: 0,
               }}
@@ -122,9 +122,9 @@ export function MinimapOverlay({
             </p>
             <p
               style={{
-                fontFamily: '"Press Start 2P", monospace',
-                fontSize: "6px",
-                color: "#444",
+                fontFamily: '"Orbitron", cursive',
+                fontSize: "0.7em",
+                color: "#666",
                 margin: "4px 0 0",
               }}
             >
@@ -137,8 +137,8 @@ export function MinimapOverlay({
             aria-label="Close map"
             data-ocid="minimap.close_button"
             style={{
-              fontFamily: '"Press Start 2P", monospace',
-              fontSize: "9px",
+              fontFamily: '"Orbitron", cursive',
+              fontSize: "0.8em",
               color: "#ff00ff",
               background: "transparent",
               border: "2px solid #ff00ff",
@@ -303,7 +303,7 @@ export function MinimapOverlay({
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    fontSize: isHovered ? "10px" : "7px",
+                    fontSize: isHovered ? "0.85em" : "0.75em",
                     padding: 0,
                   }}
                 >
@@ -337,9 +337,9 @@ export function MinimapOverlay({
         <div>
           <p
             style={{
-              fontFamily: '"Press Start 2P", monospace',
-              fontSize: "6px",
-              color: "#555",
+              fontFamily: '"Orbitron", cursive',
+              fontSize: "0.75em",
+              color: "#666",
               marginBottom: "8px",
             }}
           >
@@ -364,8 +364,8 @@ export function MinimapOverlay({
                       "transparent";
                   }}
                   style={{
-                    fontFamily: '"Press Start 2P", monospace',
-                    fontSize: "6px",
+                    fontFamily: '"Orbitron", cursive',
+                    fontSize: "0.75em",
                     color,
                     background: "transparent",
                     border: `2px solid ${color}55`,
@@ -388,9 +388,9 @@ export function MinimapOverlay({
 
         <p
           style={{
-            fontFamily: '"Press Start 2P", monospace',
-            fontSize: "5px",
-            color: "#333",
+            fontFamily: '"Orbitron", cursive',
+            fontSize: "0.7em",
+            color: "#555",
             textAlign: "center",
           }}
         >

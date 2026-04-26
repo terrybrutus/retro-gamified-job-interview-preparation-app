@@ -43,7 +43,7 @@ export function WorkflowPanel({ workflowId, onClose }: WorkflowPanelProps) {
       style={{
         position: "fixed",
         inset: 0,
-        zIndex: 300,
+        zIndex: 500,
         background: "#000",
         overflowY: "auto",
       }}
@@ -54,7 +54,7 @@ export function WorkflowPanel({ workflowId, onClose }: WorkflowPanelProps) {
         style={{
           position: "sticky",
           top: 0,
-          zIndex: 310,
+          zIndex: 510,
           background: "#000",
           borderBottom: "3px solid #39ff14",
           padding: "12px 16px",
@@ -68,16 +68,20 @@ export function WorkflowPanel({ workflowId, onClose }: WorkflowPanelProps) {
           onClick={handleClose}
           data-ocid="workflow_panel.close_button"
           style={{
-            fontFamily: '"Press Start 2P", monospace',
-            fontSize: "9px",
-            color: "#39ff14",
-            background: "transparent",
-            border: "2px solid #39ff14",
-            padding: "8px 16px",
+            fontFamily: "Orbitron, sans-serif",
+            fontSize: "0.7em",
+            color: "#000",
+            background: "#39ff14",
+            border: "none",
+            padding: "10px 18px",
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
             gap: "8px",
+            fontWeight: 700,
+            letterSpacing: "0.04em",
+            boxShadow: "0 0 12px #39ff1466",
+            flexShrink: 0,
           }}
         >
           ◀ BACK TO CAREER CITY
@@ -85,7 +89,7 @@ export function WorkflowPanel({ workflowId, onClose }: WorkflowPanelProps) {
         <span
           style={{
             fontFamily: '"Press Start 2P", monospace',
-            fontSize: "8px",
+            fontSize: "0.6em",
             color: "#00ffff",
           }}
         >
@@ -114,7 +118,7 @@ export function WorkflowPanel({ workflowId, onClose }: WorkflowPanelProps) {
               <p
                 style={{
                   fontFamily: '"Press Start 2P", monospace',
-                  fontSize: "9px",
+                  fontSize: "0.65em",
                   color: "#39ff14",
                   marginBottom: "16px",
                   borderBottom: "2px solid #39ff1433",
@@ -131,7 +135,7 @@ export function WorkflowPanel({ workflowId, onClose }: WorkflowPanelProps) {
               <p
                 style={{
                   fontFamily: '"Press Start 2P", monospace',
-                  fontSize: "9px",
+                  fontSize: "0.65em",
                   color: "#ffbf00",
                   marginBottom: "16px",
                   borderBottom: "2px solid #ffbf0033",
@@ -148,7 +152,7 @@ export function WorkflowPanel({ workflowId, onClose }: WorkflowPanelProps) {
               <p
                 style={{
                   fontFamily: '"Press Start 2P", monospace',
-                  fontSize: "9px",
+                  fontSize: "0.65em",
                   color: "#00ffff",
                   marginBottom: "16px",
                   borderBottom: "2px solid #00ffff33",
@@ -170,7 +174,7 @@ export function WorkflowPanel({ workflowId, onClose }: WorkflowPanelProps) {
             <p
               style={{
                 fontFamily: '"Press Start 2P", monospace',
-                fontSize: "9px",
+                fontSize: "0.65em",
                 color: "#ffbf00",
                 marginBottom: "16px",
                 borderBottom: "2px solid #ffbf0033",

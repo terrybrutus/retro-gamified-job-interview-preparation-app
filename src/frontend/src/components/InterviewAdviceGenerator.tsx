@@ -64,13 +64,13 @@ export function InterviewAdviceGenerator() {
 
   return (
     <div style={{ padding: "20px", fontFamily: '"Press Start 2P", monospace' }}>
-      <h2 style={{ color: "#ffbf00", fontSize: "12px", marginBottom: "8px" }}>
+      <h2 style={{ color: "#ffbf00", fontSize: "0.85em", marginBottom: "8px" }}>
         🎤 INTERVIEW ADVICE
       </h2>
       <p
         style={{
           color: "#666",
-          fontSize: "7px",
+          fontSize: "0.55em",
           marginBottom: "20px",
           lineHeight: "1.8",
         }}
@@ -95,7 +95,7 @@ export function InterviewAdviceGenerator() {
             data-ocid={`interview_advice.filter.${cat}`}
             style={{
               fontFamily: '"Press Start 2P", monospace',
-              fontSize: "7px",
+              fontSize: "0.55em",
               color: selectedCategory === cat ? "#000" : "#ffbf00",
               background: selectedCategory === cat ? "#ffbf00" : "transparent",
               border: "2px solid #ffbf00",
@@ -139,7 +139,7 @@ export function InterviewAdviceGenerator() {
               <div>
                 <span
                   style={{
-                    fontSize: "6px",
+                    fontSize: "0.5em",
                     color: "#ffbf00",
                     display: "block",
                     marginBottom: "4px",
@@ -149,7 +149,7 @@ export function InterviewAdviceGenerator() {
                 </span>
                 <span
                   style={{
-                    fontSize: "9px",
+                    fontSize: "0.65em",
                     color: "#ccc",
                     fontFamily: '"Press Start 2P", monospace',
                   }}
@@ -157,14 +157,14 @@ export function InterviewAdviceGenerator() {
                   {item.title}
                 </span>
               </div>
-              <span style={{ color: "#ffbf00", fontSize: "10px" }}>
+              <span style={{ color: "#ffbf00", fontSize: "0.7em" }}>
                 {expanded === item.id ? "▲" : "▼"}
               </span>
             </button>
             {expanded === item.id && (
               <p
                 style={{
-                  fontSize: "8px",
+                  fontSize: "0.6em",
                   color: "#aaa",
                   lineHeight: "1.8",
                   marginTop: "12px",

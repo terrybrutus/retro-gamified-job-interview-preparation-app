@@ -56,10 +56,10 @@ export function NotesManager() {
 
   return (
     <div style={{ padding: "20px", fontFamily: '"Press Start 2P", monospace' }}>
-      <h2 style={{ color: "#00ffff", fontSize: "12px", marginBottom: "8px" }}>
+      <h2 style={{ color: "#00ffff", fontSize: "0.85em", marginBottom: "8px" }}>
         📝 NOTES
       </h2>
-      <p style={{ color: "#666", fontSize: "7px", marginBottom: "20px" }}>
+      <p style={{ color: "#666", fontSize: "0.55em", marginBottom: "20px" }}>
         Your thoughts. Don't lose them.
       </p>
 
@@ -83,7 +83,7 @@ export function NotesManager() {
             border: "none",
             color: "#ccc",
             fontFamily: '"Press Start 2P", monospace',
-            fontSize: "8px",
+            fontSize: "0.6em",
             lineHeight: "1.8",
             resize: "vertical",
             minHeight: "80px",
@@ -108,7 +108,7 @@ export function NotesManager() {
               border: "2px solid #00ffff",
               color: "#00ffff",
               fontFamily: '"Press Start 2P", monospace',
-              fontSize: "7px",
+              fontSize: "0.55em",
               padding: "4px 8px",
             }}
           >
@@ -124,7 +124,7 @@ export function NotesManager() {
             data-ocid="notes.add_button"
             style={{
               fontFamily: '"Press Start 2P", monospace',
-              fontSize: "8px",
+              fontSize: "0.6em",
               color: "#000",
               background: "#00ffff",
               border: "2px solid #00ffff",
@@ -154,7 +154,7 @@ export function NotesManager() {
             data-ocid={`notes.filter.${tag}`}
             style={{
               fontFamily: '"Press Start 2P", monospace',
-              fontSize: "6px",
+              fontSize: "0.5em",
               color: filterTag === tag ? "#000" : "#00ffff",
               background: filterTag === tag ? "#00ffff" : "transparent",
               border: "1px solid #00ffff",
@@ -174,7 +174,7 @@ export function NotesManager() {
           style={{
             textAlign: "center",
             color: "#444",
-            fontSize: "8px",
+            fontSize: "0.6em",
             padding: "40px",
           }}
         >
@@ -200,16 +200,16 @@ export function NotesManager() {
                   marginBottom: "8px",
                 }}
               >
-                <span style={{ fontSize: "6px", color: "#00ffff" }}>
+                <span style={{ fontSize: "0.5em", color: "#00ffff" }}>
                   {note.tag.toUpperCase()}
                 </span>
-                <span style={{ fontSize: "6px", color: "#444" }}>
+                <span style={{ fontSize: "0.5em", color: "#444" }}>
                   {formatDate(note.timestamp)}
                 </span>
               </div>
               <p
                 style={{
-                  fontSize: "8px",
+                  fontSize: "0.6em",
                   color: "#bbb",
                   lineHeight: "1.8",
                   marginBottom: "8px",
@@ -223,7 +223,7 @@ export function NotesManager() {
                 data-ocid={`notes.delete_button.${i + 1}`}
                 style={{
                   fontFamily: '"Press Start 2P", monospace',
-                  fontSize: "6px",
+                  fontSize: "0.5em",
                   color: "#ff4444",
                   background: "transparent",
                   border: "1px solid #ff4444",

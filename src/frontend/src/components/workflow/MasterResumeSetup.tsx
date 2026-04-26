@@ -83,7 +83,7 @@ export function MasterResumeSetup({
             <CardTitle className="font-press-start text-neon-magenta text-lg">
               STAGE 2: MASTER RESUME
             </CardTitle>
-            <CardDescription className="font-press-start text-neon-cyan text-[8px] mt-2">
+            <CardDescription className="font-press-start text-neon-cyan text-[0.6em] mt-2">
               UPLOAD OR PASTE YOUR RESUME
             </CardDescription>
           </div>
@@ -92,7 +92,7 @@ export function MasterResumeSetup({
       <CardContent className="space-y-6">
         <Alert className="retro-alert border-2 border-neon-cyan bg-black">
           <FileText className="h-4 w-4 text-neon-cyan" />
-          <AlertDescription className="font-press-start text-neon-cyan text-[8px] leading-relaxed">
+          <AlertDescription className="font-press-start text-neon-cyan text-[0.6em] leading-relaxed">
             YOUR MASTER RESUME IS ALWAYS ACCESSIBLE FOR UPDATES
           </AlertDescription>
         </Alert>
@@ -135,7 +135,7 @@ export function MasterResumeSetup({
           {resumeContent && (
             <Alert className="retro-alert border-2 border-neon-green bg-black">
               <CheckCircle className="h-4 w-4 text-neon-green" />
-              <AlertDescription className="font-press-start text-neon-green text-[8px]">
+              <AlertDescription className="font-press-start text-neon-green text-[0.6em]">
                 RESUME LOADED: {filename}
               </AlertDescription>
             </Alert>

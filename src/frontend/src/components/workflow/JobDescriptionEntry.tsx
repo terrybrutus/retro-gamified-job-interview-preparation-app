@@ -47,7 +47,7 @@ export function JobDescriptionEntry({
             <CardTitle className="font-press-start text-neon-cyan text-lg">
               STAGE 3: JOB DESCRIPTION
             </CardTitle>
-            <CardDescription className="font-press-start text-neon-magenta text-[8px] mt-2">
+            <CardDescription className="font-press-start text-neon-magenta text-[0.6em] mt-2">
               ENTER TARGET JOB DETAILS
             </CardDescription>
           </div>
@@ -56,7 +56,7 @@ export function JobDescriptionEntry({
       <CardContent className="space-y-6">
         <Alert className="retro-alert border-2 border-neon-green bg-black">
           <Briefcase className="h-4 w-4 text-neon-green" />
-          <AlertDescription className="font-press-start text-neon-green text-[8px] leading-relaxed">
+          <AlertDescription className="font-press-start text-neon-green text-[0.6em] leading-relaxed">
             PASTE THE FULL JOB DESCRIPTION FOR AI ANALYSIS
           </AlertDescription>
         </Alert>
@@ -72,7 +72,7 @@ export function JobDescriptionEntry({
           {jobDescription && (
             <Alert className="retro-alert border-2 border-neon-green bg-black">
               <CheckCircle className="h-4 w-4 text-neon-green" />
-              <AlertDescription className="font-press-start text-neon-green text-[8px]">
+              <AlertDescription className="font-press-start text-neon-green text-[0.6em]">
                 JOB DESCRIPTION LOADED ({jobDescription.length} CHARS)
               </AlertDescription>
             </Alert>
